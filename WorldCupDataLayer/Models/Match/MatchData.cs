@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace WorldCupDataLayer.Models.Match
 {
-    public partial class Match : IComparable<Match>
+    public partial class MatchData : IComparable<MatchData>
     {
         [JsonProperty("venue")]
         public string Venue { get; set; }
@@ -79,14 +79,14 @@ namespace WorldCupDataLayer.Models.Match
         [JsonProperty("last_score_update_at")]
         public DateTimeOffset? LastScoreUpdateAt { get; set; }
 
-        public int CompareTo(Match? other)
+        public int CompareTo(MatchData? other)
         {
             return FifaId.CompareTo(other.FifaId);
         }
 
         public override bool Equals(object? obj)
         {
-            return obj is Match match &&
+            return obj is MatchData match &&
                    FifaId == match.FifaId;
         }
 
