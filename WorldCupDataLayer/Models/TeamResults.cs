@@ -5,7 +5,7 @@ using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace WorldCupDataLayer.Models
+namespace DataLayer.Models
 {
     public partial class TeamResults : IComparable<TeamResults>
     {

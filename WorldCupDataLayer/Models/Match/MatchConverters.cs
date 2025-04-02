@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WorldCupDataLayer.Models.Match
+namespace DataLayer.Models.Match
 {
     // This static class provides a centralized location for JSON serialization settings.
     internal static class Converter

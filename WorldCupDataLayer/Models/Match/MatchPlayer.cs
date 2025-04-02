@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WorldCupDataLayer.Models.Match
+namespace DataLayer.Models.Match
 {
     public partial class MatchPlayer
     {

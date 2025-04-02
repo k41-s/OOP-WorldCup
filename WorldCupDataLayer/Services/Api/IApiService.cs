@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WorldCupDataLayer.Models;
-using WorldCupDataLayer.Models.Match;
-using WorldCupDataLayer.Enums;
+using DataLayer.Enums;
+using DataLayer.Models;
+using DataLayer.Models.Match;
 
-namespace WorldCupDataLayer.Services.Api
+namespace DataLayer.Services.Api
 {
     public interface IApiService
     {
@@ -15,8 +15,5 @@ namespace WorldCupDataLayer.Services.Api
         Task<List<MatchData>> GetMatchDataByCountryAsync(Category category, string fifaCode);
         Task<List<Team>> GetTeamsAsync(Category category);
         Task<List<TeamResults>> GetTeamResultsAsync(Category category);
-        Task<List<GroupResults>> GetGroupResultsAsync(Category category);
-
-        
-    }
+        Task<List<GroupResults>> GetGroupResultsAsync(Category category);    }
 }

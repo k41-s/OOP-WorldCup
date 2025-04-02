@@ -1,16 +1,18 @@
-﻿using Newtonsoft.Json;
-using WorldCupDataLayer.Enums;
-using WorldCupDataLayer.Models;
-using WorldCupDataLayer.Models.Match;
+﻿using DataLayer.Enums;
+using DataLayer.Models;
+using DataLayer.Models.Match;
+using Newtonsoft.Json;
 
-namespace WorldCupDataLayer.Services.Api
+namespace DataLayer.Services.Api
 {
-    class WorldCupApiService : IApiService
+    class ApiService : IApiService
     {
+        // Instantiate the HttpClient and root url to the api
         private readonly HttpClient _httpClient;
         private const string apiRootUrl = "https://worldcup-vua.nullbit.hr/";
 
-        public WorldCupApiService(HttpClient httpClient)
+        //Dependency injection for HttpClient and set its BaseAddress
+        public ApiService(HttpClient httpClient)
         {
             _httpClient = httpClient;
             _httpClient.BaseAddress = new Uri(apiRootUrl);
@@ -51,13 +53,9 @@ namespace WorldCupDataLayer.Services.Api
             return await FetchDataAsync<List<GroupResults>>(url);
         }
 
-        // Retrieve the category name from a given enum
-        private static string GetCategoryString(Category category)
-            => category == Category.Men ? "Men" : "Women";
-
         //Construct the base url for requests based on category
         private string BuildBaseUrl(Category category)
-            => $"{apiRootUrl}/{GetCategoryString(category)}";
+            => $"{apiRootUrl}/{CategoryHelper.GetCategoryString(category)}";
 
         // Get API response individually from a url
         private async Task<HttpResponseMessage> GetApiResponseAsync(string url)

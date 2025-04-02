@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WorldCupDataLayer.Models
+namespace DataLayer.Models
 {
     public partial class GroupResults
     {
