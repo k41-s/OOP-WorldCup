@@ -3,9 +3,9 @@ using DataLayer.Models;
 using DataLayer.Models.Match;
 using Newtonsoft.Json;
 
-namespace DataLayer.Services.Api
+namespace DataLayer.Services
 {
-    class ApiService : IApiService
+    public class ApiService : IDataService
     {
         // Instantiate the HttpClient and root url to the api
         private readonly HttpClient _httpClient;
