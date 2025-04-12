@@ -18,7 +18,9 @@ namespace DataLayer.Enums
          * This method allows for the Category's value to be read easily, 
          * allowing for seamless change of endpoints without changing the enum
         */
-        public static string GetCategoryString(Category category)
+        public static string GetCategoryAsString(Category category)
             => category == Category.Men ? "men" : "women";
+        public static Category GetCategory(string category)
+            => category.ToLower() == "men" ? Category.Men : Category.Women;
     }
 }

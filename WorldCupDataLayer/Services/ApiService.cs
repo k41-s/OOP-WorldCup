@@ -55,7 +55,7 @@ namespace DataLayer.Services
 
         //Construct the base url for requests based on category
         private string BuildBaseUrl(Category category)
-            => $"{apiRootUrl}/{CategoryHelper.GetCategoryString(category)}";
+            => $"{apiRootUrl}/{CategoryHelper.GetCategoryAsString(category)}";
 
         // Get API response individually from a url
         private async Task<HttpResponseMessage> GetApiResponseAsync(string url)

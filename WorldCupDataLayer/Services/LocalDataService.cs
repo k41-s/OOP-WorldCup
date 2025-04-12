@@ -47,7 +47,7 @@ namespace DataLayer.Services
 
         // Helper method to generate the correct file path based on category (Men/Women)
         private string GetFilePath(Category category, string fileName) 
-            => Path.Combine(DataFolder, CategoryHelper.GetCategoryString(category), fileName);
+            => Path.Combine(DataFolder, CategoryHelper.GetCategoryAsString(category), fileName);
 
         // Helper method to read from a JSON file and deserialize into the specified type
         private async Task<T> ReadFromFileAsync<T>(string filePath)
