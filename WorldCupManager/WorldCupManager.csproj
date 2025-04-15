@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Utilities\Utilities.csproj" />
     <ProjectReference Include="..\WorldCupDataLayer\DataLayer.csproj" />
   </ItemGroup>
 

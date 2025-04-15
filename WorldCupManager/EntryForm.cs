@@ -1,13 +1,5 @@
 ﻿using DataLayer.Enums;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using Utilities;
 
 namespace WorldCupManager
 {
@@ -43,21 +35,10 @@ namespace WorldCupManager
             Category category = CategoryHelper.GetCategory(cbCategory.SelectedItem.ToString());
             string language = cbLanguage.SelectedItem.ToString();
 
-            SaveUserSettings(category, language);
+            Utility.SaveUserSettings(userSettingsPath, category, language);
 
             this.DialogResult = DialogResult.OK;
             this.Close();
-        }
-
-        private void SaveUserSettings(Category category, string? language)
-        {
-            /*
-                Since we check and make the file directories before opening this form
-                I will not do the checking here, we are just putting our values into
-                the file
-            */
-
-            File.WriteAllText(userSettingsPath, $"Category:{CategoryHelper.GetCategoryAsString(category)}\nLanguage:{language}");
         }
     }
 }
