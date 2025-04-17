@@ -9,7 +9,7 @@ namespace DataLayer.Services
     {
         // Instantiate the HttpClient and root url to the api
         private readonly HttpClient _httpClient;
-        private const string apiRootUrl = "https://worldcup-vua.nullbit.hr/";
+        private const string apiRootUrl = "https://worldcup-vua.nullbit.hr";
 
         //Dependency injection for HttpClient and set its BaseAddress
         public ApiService(HttpClient httpClient)

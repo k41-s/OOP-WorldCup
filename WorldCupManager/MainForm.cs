@@ -5,6 +5,8 @@ namespace WorldCupManager
 {
     public partial class MainForm : Form
     {
+        /* I DON'T THINK THESE ARE NEEDED IN THE FORM
+       
         // Path to Config folder
         private static readonly string configFolderPath
             = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config");
@@ -16,17 +18,15 @@ namespace WorldCupManager
         // Path to config settings
         private static readonly string configSettingsPath
             = Path.Combine(configFolderPath, "config.txt");
+        */
 
-        private readonly IServiceProvider _serviceProvider;
         private IDataService _dataService;
 
         // Inject Service Provider and IDataService through constructor
         public MainForm(IServiceProvider serviceProvider)
         {
-            _serviceProvider = serviceProvider;
             InitializeComponent();
-
-            _dataService = _serviceProvider.GetRequiredService<IDataService>();
+            _dataService = serviceProvider.GetRequiredService<IDataService>();
         }
 
     }

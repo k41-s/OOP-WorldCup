@@ -13,16 +13,21 @@ namespace Utilities
         private const char FILE_DEL = ':';
 
         // Path to Config folder
-        private static readonly string configFolderPath
+        public static readonly string configFolderPath
             = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config");
 
         // Path to userSettings file
-        private static readonly string userSettingsPath
+        public static readonly string userSettingsPath
             = Path.Combine(configFolderPath, "userSettings.txt");
+
+        // Path to favourite team file
+        public static readonly string favouriteTeamPath
+            = Path.Combine(configFolderPath, "favouriteTeam.txt");
 
         // Load user settings from file
         public static IDictionary<string, string> LoadUserSettings()
         {
+            // OrdinalIgnoreCase will allow the keys to be accessed with any case
             IDictionary<string, string> settings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             if (!File.Exists(userSettingsPath))
@@ -48,10 +53,11 @@ namespace Utilities
         }
 
         // Save selected category and language to file
-        public static void SaveUserSettings(string filePath, Category category, string? language)
+        public static void SaveUserSettings(Category category, string? language)
         {
             // No error checking needed, check File.WriteAllText documentation
-            File.WriteAllText(filePath, $"Category:{CategoryHelper.GetCategoryAsString(category)}\nLanguage:{language}");
+            File.WriteAllText(userSettingsPath, 
+                $"Category:{CategoryHelper.GetCategoryAsString(category)}\nLanguage:{language}");
         }
 
         // Read "UseApi" status from config file
@@ -77,6 +83,32 @@ namespace Utilities
                 });
             }
             return useApi;
+        }
+
+        // Save favourite team's fifaCode to the file
+        public static void SaveFavouriteTeam(string fifaCode)
+        {
+            File.WriteAllText(favouriteTeamPath, $"FavTeam:{fifaCode}");
+        }
+
+        // Load the favourite team's fifaCode from a file
+        public static string? LoadFavouriteTeamCode()
+        {
+            if (!File.Exists(favouriteTeamPath))
+                throw new FileNotFoundException($"File: {favouriteTeamPath} does not exist");
+
+            string[] lines = File.ReadAllLines(favouriteTeamPath);
+
+            foreach (var line in lines)
+            {
+                string[] details = line.Split(FILE_DEL);
+
+                if (details.Length == 2
+                    && details[0].ToLower() == "favteam")
+                    return details[1];
+            }
+
+            return null; // If no saved data on team just return null
         }
     }
 }

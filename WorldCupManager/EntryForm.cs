@@ -5,8 +5,6 @@ namespace WorldCupManager
 {
     public partial class EntryForm : Form
     {
-        private readonly string userSettingsPath
-            = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "userSettings.txt");
         public EntryForm()
         {
             InitializeComponent();
@@ -35,7 +33,7 @@ namespace WorldCupManager
             Category category = CategoryHelper.GetCategory(cbCategory.SelectedItem.ToString());
             string language = cbLanguage.SelectedItem.ToString();
 
-            Utility.SaveUserSettings(userSettingsPath, category, language);
+            Utility.SaveUserSettings(category, language);
 
             this.DialogResult = DialogResult.OK;
             this.Close();

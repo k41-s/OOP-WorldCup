@@ -1,22 +1,11 @@
 using DataLayer.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Utilities;
-using System;
-using System.Drawing.Text;
-using System.Windows.Forms;
 
 namespace WorldCupManager
 {
     internal static class Program
     {
-        // Path to Config folder
-        private static readonly string configFolderPath
-            = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config");
-
-        // Path to userSettings file
-        private static readonly string userSettingsPath
-            = Path.Combine(configFolderPath, "userSettings.txt");
-
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -26,11 +15,11 @@ namespace WorldCupManager
             ApplicationConfiguration.Initialize();
 
             // Create Config folder if non existent
-            if (!Directory.Exists(configFolderPath))
-                Directory.CreateDirectory(configFolderPath);
+            if (!Directory.Exists(Utility.configFolderPath))
+                Directory.CreateDirectory(Utility.configFolderPath);
 
             // Open entry form if no existing settings are present
-            if (!File.Exists(userSettingsPath))
+            if (!File.Exists(Utility.userSettingsPath))
             {
                 using EntryForm entryForm = new EntryForm();
 
@@ -49,12 +38,28 @@ namespace WorldCupManager
                 ? new ApiService(new HttpClient())
                 : new LocalDataService();
 
-
             // Create service collection and configure services
             IServiceProvider serviceProvider = new ServiceCollection()
                 .AddSingleton<IDataService>(_service)
                 .AddSingleton<MainForm>()
+                .AddSingleton<FavouriteTeamForm>()
                 .BuildServiceProvider();
+
+            // Run favouriteTeamForm to select favourite team
+            if (!File.Exists(Utility.favouriteTeamPath))
+            {
+                using FavouriteTeamForm form 
+                    = serviceProvider.GetRequiredService<FavouriteTeamForm>();
+
+                DialogResult result = form.ShowDialog();
+
+                // Ensure proper closure of application if form cancelled
+                if (result == DialogResult.Cancel)
+                {
+                    Application.Exit();
+                    return;
+                }
+            }
 
             // Retrieve MainForm with correct IDataService already injected
             MainForm mainForm = serviceProvider.GetRequiredService<MainForm>();
