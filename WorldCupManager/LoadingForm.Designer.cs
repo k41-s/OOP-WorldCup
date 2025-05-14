@@ -36,24 +36,24 @@
             // 
             pbLoading.Dock = DockStyle.Fill;
             pbLoading.Location = new Point(0, 0);
-            pbLoading.Margin = new Padding(6, 6, 6, 6);
             pbLoading.Name = "pbLoading";
-            pbLoading.Size = new Size(518, 433);
+            pbLoading.Size = new Size(279, 203);
             pbLoading.SizeMode = PictureBoxSizeMode.CenterImage;
             pbLoading.TabIndex = 0;
             pbLoading.TabStop = false;
             // 
             // LoadingForm
             // 
-            AutoScaleDimensions = new SizeF(13F, 32F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(518, 433);
+            ClientSize = new Size(279, 203);
             Controls.Add(pbLoading);
             FormBorderStyle = FormBorderStyle.None;
-            Margin = new Padding(6, 6, 6, 6);
             Name = "LoadingForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "LoadingForm";
+            TopMost = true;
+            FormClosed += LoadingForm_FormClosed;
             Load += LoadingForm_Load;
             ((System.ComponentModel.ISupportInitialize)pbLoading).EndInit();
             ResumeLayout(false);

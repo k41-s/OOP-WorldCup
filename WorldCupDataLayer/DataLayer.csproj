@@ -11,6 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Shared\Images\No-Player-Img.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="WorldCupData\men\group_results.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

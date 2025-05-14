@@ -1,9 +1,5 @@
 ﻿using DataLayer.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DataLayer.Models.Match;
 
 namespace Utilities
 {
@@ -11,6 +7,14 @@ namespace Utilities
     {
         // Delimiter in config file
         private const char FILE_DEL = ':';
+
+        // Path to Shared images folder
+        public static readonly string imagesFolderPath
+            = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Shared/Images");
+
+        // Path to default player image
+        public static readonly string defaultNoPlayerImgPath
+            = Path.Combine(imagesFolderPath, "No-Player-Img.png");
 
         // Path to Config folder
         public static readonly string configFolderPath
@@ -23,6 +27,10 @@ namespace Utilities
         // Path to favourite team file
         public static readonly string favouriteTeamPath
             = Path.Combine(configFolderPath, "favouriteTeam.txt");
+
+        //Path to favourite players file
+        public static readonly string favouritePlayersPath
+            = Path.Combine(configFolderPath, "favouritePlayers.txt");
 
         // Load user settings from file
         public static IDictionary<string, string> LoadUserSettings()
@@ -109,6 +117,44 @@ namespace Utilities
             }
 
             return null; // If no saved data on team just return null
+        }
+
+
+        public static string GetPlayerImagePath(string playerName)
+        {
+            if (string.IsNullOrWhiteSpace(playerName))
+                throw new ArgumentException("Player name is required");
+
+            string fileName = $"{FormatFileName(playerName)}.png"; // Standardise png file type
+            string imgPath = Path.Combine(imagesFolderPath, fileName);
+
+            return File.Exists(imgPath)
+                ? imgPath
+                : defaultNoPlayerImgPath;
+        }
+
+        public static void SetPlayerImage(string sourceImgPath, string playerName)
+        {
+            // Format name and surname here to be safe
+            string fileName = $"{FormatFileName($"{playerName}")}.png";
+            string destPath = Path.Combine(imagesFolderPath, fileName);
+
+            File.Copy(sourceImgPath, destPath, overwrite: true);
+        }
+
+        // Make sure file name is standardised and legitimate
+        private static string FormatFileName(string input)
+        {
+            // Replace invalid chars with '_';
+            foreach (char c in Path.GetInvalidPathChars())
+                input = input.Replace(c, '_');
+
+            return input.Trim().ToLower().Replace(' ', '_');
+        }
+
+        public static void SaveFavouritePlayers(IList<MatchPlayer> favPlayers)
+        {
+            File.WriteAllLines(favouritePlayersPath, favPlayers.Select(p => p.ToString()));
         }
     }
 }

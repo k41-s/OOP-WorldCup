@@ -64,7 +64,7 @@ namespace DataLayer.Models.Match
         public long RedCards { get; set; }
 
         [JsonProperty("fouls_committed")]
-        public long FoulsCommitted { get; set; }
+        public long? FoulsCommitted { get; set; }
 
         [JsonProperty("tactics")]
         public string Tactics { get; set; }

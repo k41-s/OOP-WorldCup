@@ -69,5 +69,15 @@ namespace WorldCupManager.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] No_Player_Img {
+            get {
+                object obj = ResourceManager.GetObject("No-Player-Img", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

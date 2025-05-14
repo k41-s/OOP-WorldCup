@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -96,6 +97,47 @@ namespace DataLayer.Models.Match
         }
     }
 
-    public enum TypeOfEvent { Goal, SubstitutionIn, SubstitutionOut, YellowCard };
-    public enum Position { Defender, Forward, Goalie, Midfield };
+    [JsonConverter(typeof(StringEnumConverter), true)] // true allows case in-sensitive
+    public enum TypeOfEvent 
+    {
+        [EnumMember(Value = "goal")]
+        Goal,
+
+        [EnumMember(Value = "goal-own")]
+        GoalOwn,
+
+        [EnumMember(Value = "goal-penalty")]
+        GoalPenalty,
+
+        [EnumMember(Value = "substitution-in")]
+        SubstitutionIn,
+
+        [EnumMember(Value = "substitution-out")]
+        SubstitutionOut,
+
+        [EnumMember(Value = "yellow-card")]
+        YellowCard,
+
+        [EnumMember(Value = "yellow-card-second")]
+        YellowCardSecond,
+
+        [EnumMember(Value = "red-card")]
+        RedCard 
+    };
+
+    [JsonConverter(typeof(StringEnumConverter), true)] // true allows case in-sensitive
+    public enum Position
+    {
+        [EnumMember(Value = "Defender")]
+        Defender,
+
+        [EnumMember(Value = "Forward")]
+        Forward,
+
+        [EnumMember(Value = "Goalie")]
+        Goalie,
+
+        [EnumMember(Value = "Midfield")]
+        Midfield 
+    };
 }

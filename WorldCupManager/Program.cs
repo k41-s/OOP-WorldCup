@@ -43,6 +43,7 @@ namespace WorldCupManager
                 .AddSingleton<IDataService>(_service)
                 .AddSingleton<MainForm>()
                 .AddSingleton<FavouriteTeamForm>()
+                .AddSingleton<FavPlayersForm>()
                 .BuildServiceProvider();
 
             // Run favouriteTeamForm to select favourite team
@@ -55,6 +56,22 @@ namespace WorldCupManager
 
                 // Ensure proper closure of application if form cancelled
                 if (result == DialogResult.Cancel)
+                {
+                    Application.Exit();
+                    return;
+                }
+            }
+
+            // Run FavPlayersForm if no favourite players are saved
+            if (!File.Exists(Utility.favouritePlayersPath))
+            {
+                using FavPlayersForm form
+                    = serviceProvider.GetRequiredService<FavPlayersForm>();
+
+                DialogResult result = form.ShowDialog();
+
+                // Safely close application if form closed
+                if(result == DialogResult.Cancel)
                 {
                     Application.Exit();
                     return;

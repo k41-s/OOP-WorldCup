@@ -17,6 +17,7 @@ namespace WorldCupManager
 
     public partial class LoadingForm : Form
     {
+        private Stream? _stream;
         public LoadingForm()
         {
             InitializeComponent();
@@ -26,15 +27,20 @@ namespace WorldCupManager
         {
             try
             {
-                using Stream stream = new MemoryStream(Properties.Resources.Loading_Icon);
-                // Detatch image form the stream
-                Image tempImg = Image.FromStream(stream);
-                pbLoading.Image = new Bitmap(tempImg);
+                _stream = new MemoryStream(Properties.Resources.Loading_Icon);
+                pbLoading.Image = Image.FromStream(_stream);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void LoadingForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            pbLoading.Image = null;
+            _stream?.Dispose();
+            _stream = null;
         }
     }
 }
