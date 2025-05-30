@@ -21,7 +21,7 @@ namespace WorldCupManager
             // Open entry form if no existing settings are present
             if (!File.Exists(Utility.userSettingsPath))
             {
-                using EntryForm entryForm = new EntryForm();
+                using SettingsForm entryForm = new SettingsForm();
 
                 DialogResult result = entryForm.ShowDialog();
 
@@ -41,9 +41,9 @@ namespace WorldCupManager
             // Create service collection and configure services
             IServiceProvider serviceProvider = new ServiceCollection()
                 .AddSingleton<IDataService>(_service)
-                .AddSingleton<MainForm>()
                 .AddSingleton<FavouriteTeamForm>()
                 .AddSingleton<FavPlayersForm>()
+                .AddSingleton<RankingListForm>()
                 .BuildServiceProvider();
 
             // Run favouriteTeamForm to select favourite team
@@ -79,10 +79,10 @@ namespace WorldCupManager
             }
 
             // Retrieve MainForm with correct IDataService already injected
-            MainForm mainForm = serviceProvider.GetRequiredService<MainForm>();
+            RankingListForm rankingForm = serviceProvider.GetRequiredService<RankingListForm>();
 
             // Pass pre-configured mainForm instead of "new MainForm()"
-            Application.Run(mainForm);
+            Application.Run(rankingForm);
         }
     }
 }

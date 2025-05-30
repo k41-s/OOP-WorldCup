@@ -156,5 +156,96 @@ namespace Utilities
         {
             File.WriteAllLines(favouritePlayersPath, favPlayers.Select(p => p.ToString()));
         }
+
+        public static int CalcGoalsForPlayer(MatchPlayer player, IList<MatchData> matches, string teamName)
+        {
+            int numGoals = 0;
+
+            foreach(var match in matches)
+            {
+                List<TeamEvent> relevantEvents = null;
+
+                if (match.HomeTeamCountry == teamName)
+                    relevantEvents = match.HomeTeamEvents;
+                else if (match.AwayTeamCountry == teamName)
+                    relevantEvents = match.AwayTeamEvents;
+                else
+                    continue;
+
+                    numGoals += relevantEvents.Count(e =>
+                        e.Player.Equals(player.Name, StringComparison.OrdinalIgnoreCase) &&
+                        (e.TypeOfEvent == TypeOfEvent.Goal 
+                        || e.TypeOfEvent == TypeOfEvent.GoalPenalty));
+            };
+
+            return numGoals;
+        }
+
+        public static int CalcYellowCardsForPlayer(MatchPlayer player, IList<MatchData> matches, string teamName)
+        {
+            int yellowCards = 0;
+
+            foreach (var match in matches)
+            {
+                List<TeamEvent> relevantEvents = null;
+
+                if (match.HomeTeamCountry == teamName)
+                    relevantEvents = match.HomeTeamEvents;
+                else if (match.AwayTeamCountry == teamName)
+                    relevantEvents = match.AwayTeamEvents;
+                else
+                    continue;
+
+                yellowCards += relevantEvents.Count(e =>
+                    e.Player.Equals(player.Name, StringComparison.OrdinalIgnoreCase) &&
+                    (e.TypeOfEvent == TypeOfEvent.YellowCard 
+                    || e.TypeOfEvent == TypeOfEvent.YellowCardSecond));
+            };
+
+            return yellowCards;
+        }
+
+        public static int CalcAppearancesForPlayer(MatchPlayer player, IList<MatchData> matches, string teamName)
+        {
+            int appearances = 0;
+
+            foreach (var match in matches)
+            {
+                TeamStatistics? relevantStats = match.HomeTeamCountry == teamName
+                    ? match.HomeTeamStatistics
+                    : match.AwayTeamStatistics;
+
+                if (relevantStats == null)
+                    continue;
+
+                bool appeared = relevantStats.StartingEleven.Any(p =>
+                    p.Name.Equals(player.Name, StringComparison.OrdinalIgnoreCase))
+                    || relevantStats.Substitutes.Any(p =>
+                    p.Name.Equals(player.Name, StringComparison.OrdinalIgnoreCase));
+
+                if (appeared) appearances++;
+            }
+
+            return appearances;
+        }
+
+        public static MatchTeam? GetTeamByFifaCode(string? fifaCode, IList<MatchData> matches)
+        {
+            if (fifaCode is not null)
+            {
+                foreach (var match in matches)
+                {
+                    if (match.HomeTeam.FifaCode.Equals(fifaCode, StringComparison.OrdinalIgnoreCase))
+                        return match.HomeTeam;
+                    else if (match.AwayTeam.FifaCode.Equals(fifaCode, StringComparison.OrdinalIgnoreCase))
+                        return match.AwayTeam;
+                }
+
+                return null; // Not found
+            }
+
+            return null; // fifaCode null
+        }
+
     }
 }

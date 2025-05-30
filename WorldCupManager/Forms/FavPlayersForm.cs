@@ -3,16 +3,7 @@ using DataLayer.Models;
 using DataLayer.Models.Match;
 using DataLayer.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Security.Cryptography.Pkcs;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Utilities;
 
 namespace WorldCupManager
@@ -93,7 +84,8 @@ namespace WorldCupManager
             return await Task.Run(() =>
             {
                 MatchData? firstMatch =
-                matches.FirstOrDefault(m => m.HomeTeam.FifaCode == teamCode || m.AwayTeam.FifaCode == teamCode);
+                    matches.FirstOrDefault(m => m.HomeTeam.FifaCode == teamCode 
+                    || m.AwayTeam.FifaCode == teamCode);
 
                 if (firstMatch == null)
                     return new List<MatchPlayer>();

@@ -4,7 +4,7 @@ using Utilities;
 namespace WorldCupManager
 {
     public partial class PlayerControl : UserControl
-    {// error mapping bitmap to byte or something fucking retarded
+    {
         public readonly MatchPlayer _player;
         private Stream? _stream;
 
@@ -15,31 +15,6 @@ namespace WorldCupManager
             lblName.Text = _player.ToString();
 
             RegisterMouseDownRecursive(this);
-        }
-
-        private void LoadPlayerImage()
-        {
-            _stream = new MemoryStream(Properties.Resources.No_Player_Img);
-            Image defaultImg = Image.FromStream(_stream);
-
-            try
-            {
-                string imagePath = Utility.GetPlayerImagePath(_player.Name);
-
-                if (File.Exists(imagePath))
-                {
-                    pbPlayerImg.Image = Image.FromFile(imagePath);
-                }
-                else
-                {
-                    pbPlayerImg.Image = defaultImg;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to load img for {_player.Name}: {ex.Message}", "Image Error");
-                pbPlayerImg.Image = defaultImg;
-            }
         }
 
         // Make sure each child control has event hooked up
@@ -83,6 +58,31 @@ namespace WorldCupManager
         private void PlayerControl_Load(object sender, EventArgs e)
         {
             LoadPlayerImage();
+        }
+
+        private void LoadPlayerImage()
+        {
+            _stream = new MemoryStream(Properties.Resources.No_Player_Img);
+            Image defaultImg = Image.FromStream(_stream);
+
+            try
+            {
+                string imagePath = Utility.GetPlayerImagePath(_player.Name);
+
+                if (File.Exists(imagePath))
+                {
+                    pbPlayerImg.Image = Image.FromFile(imagePath);
+                }
+                else
+                {
+                    pbPlayerImg.Image = defaultImg;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load img for {_player.Name}: {ex.Message}", "Image Error");
+                pbPlayerImg.Image = defaultImg;
+            }
         }
     }
 }
