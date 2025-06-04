@@ -16,7 +16,9 @@ namespace WorldCupManager
 
             // Create Config folder if non existent
             if (!Directory.Exists(Utility.configFolderPath))
+            {
                 Directory.CreateDirectory(Utility.configFolderPath);
+            }
 
             // Open entry form if no existing settings are present
             if (!File.Exists(Utility.userSettingsPath))

@@ -1,0 +1,56 @@
+﻿<Window x:Class="WorldCupStatsViewer.Views.NationalTeamView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WorldCupStatsViewer.Views"
+        mc:Ignorable="d"
+        Title="National Team Overview" 
+        Height="300" 
+        Width="800"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Favorite Team Selection *Make sure default is selected fav team* -->
+        <TextBlock Text="Favorite Team:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" FontSize="22" FontWeight="Medium"/>
+        <ComboBox 
+            x:Name="cbFavoriteTeam" 
+            Grid.Row="0" 
+            Grid.Column="1" 
+            Margin="10,0"
+            FontSize="18"
+            SelectionChanged="ComboBoxes_SelectionChanged"
+        />
+
+        <!-- Opponent Selection -->
+        <TextBlock Text="Opponent Team:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" FontSize="22" FontWeight="Medium"/>
+        <ComboBox 
+            x:Name="cbOpponentTeam" 
+            Grid.Row="1" 
+            Grid.Column="1" 
+            Margin="10,0"
+            FontSize="18"
+            SelectionChanged="ComboBoxes_SelectionChanged"    
+        />
+
+        <!-- Match Result -->
+        <TextBlock Text="Match Result:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" FontSize="20"/>
+        <TextBlock x:Name="tbMatchResult" Grid.Row="2" Grid.Column="1" FontSize="16" FontWeight="Bold" HorizontalAlignment="Right" Margin="10"/>
+
+        <!-- Team Info Buttons -->
+        <Button Content="Show Opponent Team Info" Grid.Row="4" Grid.Column="1" Margin="0,10" Click="OnOpponentTeamInfoClick" FontSize="22" FontWeight="Medium"/>
+        <Button Content="Show Favorite Team Info" Grid.Row="4" Grid.Column="0" Margin="0,10,0,10" Click="OnFavoriteTeamInfoClick" FontSize="22" FontWeight="Medium" />
+
+    </Grid>
+</Window>

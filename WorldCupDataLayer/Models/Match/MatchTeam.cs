@@ -36,5 +36,8 @@ namespace DataLayer.Models.Match
         {
             return HashCode.Combine(FifaCode);
         }
+
+        public override string ToString()
+            => $"{Country} ({FifaCode})";
     }
 }

@@ -1,0 +1,39 @@
+﻿<Window x:Class="WorldCupStatsViewer.Views.TeamInfoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WorldCupStatsViewer.Views"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="Team Info" Height="400" Width="400">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Team Name -->
+        <TextBlock x:Name="tbTeamName" FontSize="26" FontWeight="Bold" TextAlignment="Center" />
+
+        <!-- Stats Area -->
+        <StackPanel Grid.Row="1" Margin="0,20,0,0">
+            <TextBlock x:Name="tbTotalMatches" FontSize="22"/>
+            <TextBlock x:Name="tbWins" FontSize="22"/>
+            <TextBlock x:Name="tbLosses" FontSize="22"/>
+            <TextBlock x:Name="tbDraws" FontSize="22"/>
+            <TextBlock x:Name="tbGoalsScored" FontSize="22"/>
+            <TextBlock x:Name="tbGoalsConceded" FontSize="22"/>
+        </StackPanel>
+
+        <!-- Close Button -->
+        <Button 
+            Content="Close Window" 
+            Grid.Row="2" 
+            HorizontalAlignment="Right" 
+            Width="100" 
+            Click="BtnClose_Click"
+        />
+    </Grid>
+</Window>

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldCupManager", "WorldCup
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Utilities.csproj", "{A98DE568-00F5-4621-B3BE-B0F676B9113A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldCupStatsViewer", "WorldCupStatsViewer\WorldCupStatsViewer.csproj", "{1FE7D6B0-203B-45B7-8850-F25584EE03F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{A98DE568-00F5-4621-B3BE-B0F676B9113A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A98DE568-00F5-4621-B3BE-B0F676B9113A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A98DE568-00F5-4621-B3BE-B0F676B9113A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FE7D6B0-203B-45B7-8850-F25584EE03F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FE7D6B0-203B-45B7-8850-F25584EE03F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FE7D6B0-203B-45B7-8850-F25584EE03F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FE7D6B0-203B-45B7-8850-F25584EE03F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,9 +8,13 @@ namespace Utilities
         // Delimiter in config file
         private const char FILE_DEL = ':';
 
+        // Path to Shared folder in Data Layer
+        public static readonly string sharedFolderPath
+            = GetSharedFolderPath();
+
         // Path to Shared images folder
         public static readonly string imagesFolderPath
-            = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Shared/Images");
+            = Path.Combine(sharedFolderPath, "Images");
 
         // Path to default player image
         public static readonly string defaultNoPlayerImgPath
@@ -18,7 +22,7 @@ namespace Utilities
 
         // Path to Config folder
         public static readonly string configFolderPath
-            = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config");
+            = Path.Combine(sharedFolderPath, "Config");
 
         // Path to userSettings file
         public static readonly string userSettingsPath
@@ -31,6 +35,25 @@ namespace Utilities
         //Path to favourite players file
         public static readonly string favouritePlayersPath
             = Path.Combine(configFolderPath, "favouritePlayers.txt");
+
+        // Use data layer as a shared directory for relative paths
+        public static string GetSharedFolderPath()
+        {
+            // Traverse up from current directory to find the solution root
+            string currentDir = AppDomain.CurrentDomain.BaseDirectory;
+            Console.WriteLine("Starting directory: " + currentDir);
+            DirectoryInfo? dir = new DirectoryInfo(currentDir);
+
+            while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, "WorldCupDataLayer", "Shared")))
+            {
+                dir = dir.Parent;
+            }
+
+            if (dir == null)
+                throw new DirectoryNotFoundException("Could not locate DataLayer/Shared folder.");
+
+            return Path.Combine(dir.FullName, "WorldCupDataLayer", "Shared");
+        }
 
         // Load user settings from file
         public static IDictionary<string, string> LoadUserSettings()
@@ -45,7 +68,7 @@ namespace Utilities
 
             foreach (string line in lines)
             {
-                if (String.IsNullOrWhiteSpace(line))
+                if (string.IsNullOrWhiteSpace(line))
                     continue;
 
                 string[] data = line.Split(FILE_DEL);
@@ -63,9 +86,36 @@ namespace Utilities
         // Save selected category and language to file
         public static void SaveUserSettings(Category category, string? language)
         {
+            // Make sure the Config folder exists
+            Directory.CreateDirectory(configFolderPath);
+
             // No error checking needed, check File.WriteAllText documentation
             File.WriteAllText(userSettingsPath, 
                 $"Category:{CategoryHelper.GetCategoryAsString(category)}\nLanguage:{language}");
+        }
+
+        // New for WPF, added displayMode setting
+        public static void SaveUserSettings(Category category, string? language, string? displayMode = null)
+        {
+            // Make sure the Config folder exists
+            Directory.CreateDirectory(configFolderPath);
+
+            var lines = new List<string>
+            {
+                $"Category:{CategoryHelper.GetCategoryAsString(category)}",
+                $"Language:{language}"
+            };
+
+            if (!string.IsNullOrWhiteSpace(displayMode))
+                lines.Add($"DisplayMode:{displayMode}");
+
+            File.WriteAllLines(userSettingsPath, lines);
+        }
+
+        public static string? LoadDisplayMode()
+        {
+            var settings = LoadUserSettings();
+            return settings.TryGetValue("DisplayMode", out var mode) ? mode : null;
         }
 
         // Read "UseApi" status from config file
@@ -119,6 +169,47 @@ namespace Utilities
             return null; // If no saved data on team just return null
         }
 
+        public static MatchTeam? GetTeamByFifaCode(string? fifaCode, IList<MatchData> matches)
+        {
+            if (fifaCode is not null)
+            {
+                foreach (var match in matches)
+                {
+                    if (match.HomeTeam.FifaCode.Equals(fifaCode, StringComparison.OrdinalIgnoreCase))
+                        return match.HomeTeam;
+                    else if (match.AwayTeam.FifaCode.Equals(fifaCode, StringComparison.OrdinalIgnoreCase))
+                        return match.AwayTeam;
+                }
+
+                return null; // Not found
+            }
+
+            return null; // fifaCode null
+        }
+
+        public static string? GetFifaCodeByTeamName(string? teamName, IList<MatchData> matches)
+        {
+            if (string.IsNullOrWhiteSpace(teamName) || matches == null || matches.Count == 0)
+                return null;
+
+            foreach (var match in matches)
+            {
+                if (match.HomeTeamCountry.Equals(teamName, StringComparison.OrdinalIgnoreCase))
+                    return match.HomeTeam?.FifaCode;
+
+                if (match.AwayTeamCountry.Equals(teamName, StringComparison.OrdinalIgnoreCase))
+                    return match.AwayTeam?.FifaCode;
+            }
+
+            return null; // Not found
+        }
+
+        public static IList<MatchTeam> GetOpponents(string? fifaCode, IList<MatchData> allMatches)
+            => allMatches
+                        .Where(m => m.HomeTeam.FifaCode == fifaCode || m.AwayTeam.FifaCode == fifaCode)
+                        .Select(m => m.HomeTeam.FifaCode == fifaCode ? m.AwayTeam : m.HomeTeam)
+                        .Distinct()
+                        .ToList();
 
         public static string GetPlayerImagePath(string playerName)
         {
@@ -157,13 +248,40 @@ namespace Utilities
             File.WriteAllLines(favouritePlayersPath, favPlayers.Select(p => p.ToString()));
         }
 
+        public static int CalcGoalsForTeam(MatchData match, string fifaCode)
+        {
+            int goals = 0;
+
+            // Check if the team is home or away
+            bool isHomeTeam = match.HomeTeam?.FifaCode == fifaCode;
+            bool isAwayTeam = match.AwayTeam?.FifaCode == fifaCode;
+
+            if (!isHomeTeam && !isAwayTeam)
+                return 0; // Team not in this match
+
+            // Assign appropriate events to lists
+            IList<TeamEvent> ownEvents = isHomeTeam ? match.HomeTeamEvents : match.AwayTeamEvents;
+            IList<TeamEvent> opponentEvents = isAwayTeam ? match.AwayTeamEvents : match.HomeTeamEvents;
+
+            // Our team's goals
+            goals += ownEvents.Count(e =>
+                e.TypeOfEvent == TypeOfEvent.Goal ||
+                e.TypeOfEvent == TypeOfEvent.GoalPenalty
+            );
+
+            // Opponent's own goals which count for this team
+            goals += opponentEvents.Count(e => e.TypeOfEvent == TypeOfEvent.GoalOwn);
+
+            return goals;
+        }
+
         public static int CalcGoalsForPlayer(MatchPlayer player, IList<MatchData> matches, string teamName)
         {
             int numGoals = 0;
 
             foreach(var match in matches)
             {
-                List<TeamEvent> relevantEvents = null;
+                List<TeamEvent>? relevantEvents = null;
 
                 if (match.HomeTeamCountry == teamName)
                     relevantEvents = match.HomeTeamEvents;
@@ -187,7 +305,7 @@ namespace Utilities
 
             foreach (var match in matches)
             {
-                List<TeamEvent> relevantEvents = null;
+                List<TeamEvent>? relevantEvents = null;
 
                 if (match.HomeTeamCountry == teamName)
                     relevantEvents = match.HomeTeamEvents;
@@ -228,24 +346,5 @@ namespace Utilities
 
             return appearances;
         }
-
-        public static MatchTeam? GetTeamByFifaCode(string? fifaCode, IList<MatchData> matches)
-        {
-            if (fifaCode is not null)
-            {
-                foreach (var match in matches)
-                {
-                    if (match.HomeTeam.FifaCode.Equals(fifaCode, StringComparison.OrdinalIgnoreCase))
-                        return match.HomeTeam;
-                    else if (match.AwayTeam.FifaCode.Equals(fifaCode, StringComparison.OrdinalIgnoreCase))
-                        return match.AwayTeam;
-                }
-
-                return null; // Not found
-            }
-
-            return null; // fifaCode null
-        }
-
     }
 }

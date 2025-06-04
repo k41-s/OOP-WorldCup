@@ -2,7 +2,6 @@ using DataLayer.Enums;
 using DataLayer.Models.Match;
 using DataLayer.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text.RegularExpressions;
 using Utilities;
 using WorldCupManager.Models;
 using WorldCupManager.UserControls;
