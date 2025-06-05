@@ -20,6 +20,10 @@ namespace Utilities
         public static readonly string defaultNoPlayerImgPath
             = Path.Combine(imagesFolderPath, "No-Player-Img.png");
 
+        // Path to football pitch background
+        public static readonly string footballPitchImgPath
+            = Path.Combine(imagesFolderPath, "football-pitch-background.jpg");
+
         // Path to Config folder
         public static readonly string configFolderPath
             = Path.Combine(sharedFolderPath, "Config");

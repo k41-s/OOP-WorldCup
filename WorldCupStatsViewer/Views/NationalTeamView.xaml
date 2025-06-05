@@ -6,11 +6,12 @@
         xmlns:local="clr-namespace:WorldCupStatsViewer.Views"
         mc:Ignorable="d"
         Title="National Team Overview" 
-        Height="300" 
+        Height="700" 
         Width="800"
         WindowStartupLocation="CenterScreen">
     <Grid Margin="20">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -49,8 +50,42 @@
         <TextBlock x:Name="tbMatchResult" Grid.Row="2" Grid.Column="1" FontSize="16" FontWeight="Bold" HorizontalAlignment="Right" Margin="10"/>
 
         <!-- Team Info Buttons -->
-        <Button Content="Show Opponent Team Info" Grid.Row="4" Grid.Column="1" Margin="0,10" Click="OnOpponentTeamInfoClick" FontSize="22" FontWeight="Medium"/>
-        <Button Content="Show Favorite Team Info" Grid.Row="4" Grid.Column="0" Margin="0,10,0,10" Click="OnFavoriteTeamInfoClick" FontSize="22" FontWeight="Medium" />
+        <Button Content="Show Opponent Team Info" Grid.Row="3" Grid.Column="1" Margin="0,10" Click="OnOpponentTeamInfoClick" FontSize="22" FontWeight="Medium"/>
+        <Button Content="Show Favorite Team Info" Grid.Row="3" Grid.Column="0" Margin="0,10,0,10" Click="OnFavoriteTeamInfoClick" FontSize="22" FontWeight="Medium" />
 
+        <TextBlock 
+            x:Name="tbFavTeam"
+            Text="Favorite Team" 
+            Grid.Row="4" 
+            Grid.Column="0" 
+            Margin="2" 
+            HorizontalAlignment="Left"
+            FontSize="20"
+            FontWeight="Bold"
+        />
+        
+        <TextBlock 
+            x:Name="tbOppTeam"
+            Text="Opponent Team" 
+            Grid.Row="4" 
+            Grid.Column="1" 
+            Margin="2" 
+            HorizontalAlignment="Right"
+            FontSize="20"
+            FontWeight="Bold"
+        />
+
+        <!-- Background pitch, loaded through code-->
+        <Image 
+            x:Name="pitchImg"
+            Stretch="UniformToFill"
+            Grid.ColumnSpan="2"
+            Grid.Row="5"/>
+
+        <!-- Overlaying players -->
+        <Canvas 
+            x:Name="canvasPlayers"
+            Grid.ColumnSpan="2"
+            Grid.Row="5"/>
     </Grid>
 </Window>

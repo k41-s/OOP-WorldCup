@@ -1,10 +1,13 @@
 ﻿using DataLayer.Enums;
 using DataLayer.Models.Match;
 using DataLayer.Services;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 using Utilities;
+using WorldCupStatsViewer.Controls;
 
 namespace WorldCupStatsViewer.Views
 {
@@ -63,6 +66,9 @@ namespace WorldCupStatsViewer.Views
             {
                 cbFavoriteTeam.SelectedIndex = defaultIndex;
             }
+
+            // Apply football pitch background
+            pitchImg.Source = new BitmapImage(new Uri(Utility.footballPitchImgPath));
         }
 
         private void ComboBoxes_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -97,6 +103,11 @@ namespace WorldCupStatsViewer.Views
                 cbOpponentTeam.ItemsSource = opponents;
                 cbOpponentTeam.SelectedItem = null;
 
+                // Reset the field
+                canvasPlayers.Children.Clear();
+
+                tbFavTeam.Text = "Favorite Team";
+                tbOppTeam.Text = "Opponent Team";
                 tbMatchResult.Text = "";
                 return; // Don’t continue — we wait until both boxes are selected
             }
@@ -127,7 +138,88 @@ namespace WorldCupStatsViewer.Views
                 int opponentGoals = Utility.CalcGoalsForTeam(match, opponentCode);
 
                 tbMatchResult.Text = $"{favoriteGoals} : {opponentGoals}";
+
+                tbFavTeam.Text = Utility.GetTeamByFifaCode(_selectedTeamFifaCode, _allMatches)?.Country;
+                tbOppTeam.Text = opponentTeam.Country;
+
+                // Populate the pitch with players
+                bool isFavoriteHome = match.HomeTeam.FifaCode == _selectedTeamFifaCode;
+
+                IList<MatchPlayer> favoritePlayers = isFavoriteHome ? match.HomeTeamStatistics.StartingEleven : match.AwayTeamStatistics.StartingEleven;
+                IList<MatchPlayer> opponentPlayers = isFavoriteHome ? match.AwayTeamStatistics.StartingEleven : match.HomeTeamStatistics.StartingEleven;
+
+                DisplayPlayersOnPitch(favoritePlayers, true);
+                DisplayPlayersOnPitch(opponentPlayers, false);
             }
+        }
+
+        // Mess with locations, left or right etc.
+        private void DisplayPlayersOnPitch(IList<MatchPlayer> players, bool isFavTeam)
+        {
+            if (isFavTeam)
+                canvasPlayers.Children.Clear();
+
+            double canvasWidth = canvasPlayers.ActualWidth;
+            double canvasHeight = canvasPlayers.ActualHeight;
+
+            if(canvasWidth == 0 || canvasHeight== 0)
+            {
+                // (_, _) discards the Loaded delegate necessary params
+                canvasPlayers.Loaded += (_, _) => DisplayPlayersOnPitch(players, isFavTeam);
+                return;
+            }
+
+            IDictionary<Position, List<MatchPlayer>> grouped = players
+                .GroupBy(p => p.Position)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            // Horizontal position on pitch (left for favorite team, right for opponent)
+            IDictionary<Position, double> positionX = isFavTeam
+                ? new Dictionary<Position, double> // Left half (0.0–0.5)
+                {
+                    [Position.Goalie] = 0.1,
+                    [Position.Defender] = 0.2,
+                    [Position.Midfield] = 0.3,
+                    [Position.Forward] = 0.4
+                }
+                : new Dictionary<Position, double> // Right half (0.5–1.0)
+                {
+                    [Position.Goalie] = 0.9,
+                    [Position.Defender] = 0.8,
+                    [Position.Midfield] = 0.7,
+                    [Position.Forward] = 0.6
+                };
+
+            foreach (var position in grouped.Keys)
+            {
+                List<MatchPlayer> playersInPosition = grouped[position];
+                double x = canvasWidth * positionX[position];
+
+                for (int i = 0; i < playersInPosition.Count; i++)
+                {
+                    double spacing = canvasHeight / (playersInPosition.Count + 1);
+                    double y = spacing * (i + 1); // evenly distribute vertically
+
+                    Control control = GetPlayerPitchControl(playersInPosition[i]);
+
+                    Canvas.SetLeft(control, x - control.Width / 2);
+                    Canvas.SetTop(control, y - control.Height / 2);
+
+                    canvasPlayers.Children.Add(control);
+                }
+            }
+        }
+
+        private PlayerOnFieldControl GetPlayerPitchControl(MatchPlayer matchPlayer)
+        {
+            string name = matchPlayer.Name;
+            long shirtNumber = matchPlayer.ShirtNumber;
+            string imgPath = Utility.GetPlayerImagePath(name);
+
+            return new PlayerOnFieldControl(
+                name,
+                shirtNumber,
+                imgPath);
         }
 
         private void OnFavoriteTeamInfoClick(object sender, RoutedEventArgs e)
