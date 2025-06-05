@@ -75,17 +75,21 @@
             FontWeight="Bold"
         />
 
-        <!-- Background pitch, loaded through code-->
-        <Image 
-            x:Name="pitchImg"
-            Stretch="UniformToFill"
-            Grid.ColumnSpan="2"
-            Grid.Row="5"/>
+        <Grid Grid.ColumnSpan="2" Grid.Row="5">
+            <!-- Background pitch, loaded through code-->
+            <Image 
+                x:Name="pitchImg"
+                Stretch="Fill"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Panel.ZIndex="0"
+            />
 
-        <!-- Overlaying players -->
-        <Canvas 
-            x:Name="canvasPlayers"
-            Grid.ColumnSpan="2"
-            Grid.Row="5"/>
+            <!-- Overlaying players -->
+            <Canvas 
+                x:Name="canvasPlayers"
+                SizeChanged="canvasPlayers_SizeChanged"
+            />
+        </Grid>
     </Grid>
 </Window>

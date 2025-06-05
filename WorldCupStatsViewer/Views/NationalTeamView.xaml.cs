@@ -22,6 +22,9 @@ namespace WorldCupStatsViewer.Views
         private Category _category;
         private IList<MatchTeam>? _allTeams;
 
+        private IList<MatchPlayer>? _lastFavPlayers;
+        private IList<MatchPlayer>? _lastOppPlayers;
+
         public NationalTeamView(IDataService dataService)
         {
             InitializeComponent();
@@ -153,15 +156,23 @@ namespace WorldCupStatsViewer.Views
             }
         }
 
-        // Mess with locations, left or right etc.
         private void DisplayPlayersOnPitch(IList<MatchPlayer> players, bool isFavTeam)
         {
+            // Cache for resize
             if (isFavTeam)
+            {
+                _lastFavPlayers = players;
                 canvasPlayers.Children.Clear();
+            }
+            else
+            {
+                _lastOppPlayers = players;
+            }
 
             double canvasWidth = canvasPlayers.ActualWidth;
             double canvasHeight = canvasPlayers.ActualHeight;
 
+            // Try again if pitch not set yet
             if(canvasWidth == 0 || canvasHeight== 0)
             {
                 // (_, _) discards the Loaded delegate necessary params
@@ -169,12 +180,13 @@ namespace WorldCupStatsViewer.Views
                 return;
             }
 
+            // Group players into dictionary by position
             IDictionary<Position, List<MatchPlayer>> grouped = players
                 .GroupBy(p => p.Position)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
             // Horizontal position on pitch (left for favorite team, right for opponent)
-            IDictionary<Position, double> positionX = isFavTeam
+            IDictionary<Position, double> xPositions = isFavTeam
                 ? new Dictionary<Position, double> // Left half (0.0–0.5)
                 {
                     [Position.Goalie] = 0.1,
@@ -192,16 +204,22 @@ namespace WorldCupStatsViewer.Views
 
             foreach (var position in grouped.Keys)
             {
-                List<MatchPlayer> playersInPosition = grouped[position];
-                double x = canvasWidth * positionX[position];
+                // Store all players who play in the current position
+                IList<MatchPlayer> playersInPosition = grouped[position];
 
+                // X coord of players in this position
+                double x = canvasWidth * xPositions[position];
+
+                // Assign location for each player in this position
                 for (int i = 0; i < playersInPosition.Count; i++)
                 {
-                    double spacing = canvasHeight / (playersInPosition.Count + 1);
-                    double y = spacing * (i + 1); // evenly distribute vertically
+                    // Make sure players don't overlap
+                    double yRatio = ((i + 1.0) / (playersInPosition.Count + 1));
+                    double y = canvasHeight * yRatio;
 
                     Control control = GetPlayerPitchControl(playersInPosition[i]);
 
+                    // Put player control in appropriate position
                     Canvas.SetLeft(control, x - control.Width / 2);
                     Canvas.SetTop(control, y - control.Height / 2);
 
@@ -258,6 +276,14 @@ namespace WorldCupStatsViewer.Views
 
             var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.5));
             window.BeginAnimation(Window.OpacityProperty, fadeIn);
+        }
+
+        private void canvasPlayers_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (_lastFavPlayers != null)
+                DisplayPlayersOnPitch(_lastFavPlayers, true);
+            if (_lastOppPlayers != null)
+                DisplayPlayersOnPitch(_lastOppPlayers, false);
         }
     }
 }
