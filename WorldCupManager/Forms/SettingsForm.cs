@@ -22,9 +22,9 @@ namespace WorldCupManager
 
         private void SettingsForm_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
+            if (e.KeyData == Keys.Enter)
                 ConfirmSettings();
-            else if (e.KeyCode == Keys.Escape)
+            else if (e.KeyData == Keys.Escape)
                 ExitForm();
         }
 

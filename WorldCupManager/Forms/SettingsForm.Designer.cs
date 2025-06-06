@@ -40,39 +40,35 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(149, 19);
-            label1.Margin = new Padding(6, 0, 6, 0);
+            label1.Location = new Point(80, 9);
             label1.Name = "label1";
-            label1.Size = new Size(227, 32);
+            label1.Size = new Size(113, 15);
             label1.TabIndex = 1;
             label1.Text = "Application Settings";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(22, 145);
-            label2.Margin = new Padding(6, 0, 6, 0);
+            label2.Location = new Point(12, 68);
             label2.Name = "label2";
-            label2.Size = new Size(115, 32);
+            label2.Size = new Size(58, 15);
             label2.TabIndex = 2;
             label2.Text = "Category:";
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(22, 363);
-            label3.Margin = new Padding(6, 0, 6, 0);
+            label3.Location = new Point(12, 170);
             label3.Name = "label3";
-            label3.Size = new Size(123, 32);
+            label3.Size = new Size(62, 15);
             label3.TabIndex = 4;
             label3.Text = "Language:";
             // 
             // btnConfirm
             // 
-            btnConfirm.Location = new Point(22, 497);
-            btnConfirm.Margin = new Padding(6, 6, 6, 6);
+            btnConfirm.Location = new Point(12, 233);
             btnConfirm.Name = "btnConfirm";
-            btnConfirm.Size = new Size(210, 126);
+            btnConfirm.Size = new Size(113, 59);
             btnConfirm.TabIndex = 5;
             btnConfirm.Text = "Confirm Settings";
             btnConfirm.UseVisualStyleBackColor = true;
@@ -80,10 +76,9 @@
             // 
             // btnCancel
             // 
-            btnCancel.Location = new Point(312, 497);
-            btnCancel.Margin = new Padding(6, 6, 6, 6);
+            btnCancel.Location = new Point(168, 233);
             btnCancel.Name = "btnCancel";
-            btnCancel.Size = new Size(210, 126);
+            btnCancel.Size = new Size(113, 59);
             btnCancel.TabIndex = 6;
             btnCancel.Text = "Close";
             btnCancel.UseVisualStyleBackColor = true;
@@ -94,10 +89,9 @@
             cbCategory.DropDownStyle = ComboBoxStyle.DropDownList;
             cbCategory.FormattingEnabled = true;
             cbCategory.Items.AddRange(new object[] { "Men", "Women" });
-            cbCategory.Location = new Point(149, 139);
-            cbCategory.Margin = new Padding(6, 6, 6, 6);
+            cbCategory.Location = new Point(80, 65);
             cbCategory.Name = "cbCategory";
-            cbCategory.Size = new Size(370, 40);
+            cbCategory.Size = new Size(201, 23);
             cbCategory.TabIndex = 7;
             // 
             // cbLanguage
@@ -105,17 +99,16 @@
             cbLanguage.DropDownStyle = ComboBoxStyle.DropDownList;
             cbLanguage.FormattingEnabled = true;
             cbLanguage.Items.AddRange(new object[] { "English", "Croatian" });
-            cbLanguage.Location = new Point(149, 356);
-            cbLanguage.Margin = new Padding(6, 6, 6, 6);
+            cbLanguage.Location = new Point(80, 167);
             cbLanguage.Name = "cbLanguage";
-            cbLanguage.Size = new Size(370, 40);
+            cbLanguage.Size = new Size(201, 23);
             cbLanguage.TabIndex = 8;
             // 
             // SettingsForm
             // 
-            AutoScaleDimensions = new SizeF(13F, 32F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(544, 649);
+            ClientSize = new Size(293, 304);
             Controls.Add(cbLanguage);
             Controls.Add(cbCategory);
             Controls.Add(btnCancel);
@@ -123,10 +116,10 @@
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
-            Margin = new Padding(6, 6, 6, 6);
+            KeyPreview = true;
             Name = "SettingsForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "EntryForm";
+            Text = "Settings";
             KeyUp += SettingsForm_KeyUp;
             ResumeLayout(false);
             PerformLayout();
