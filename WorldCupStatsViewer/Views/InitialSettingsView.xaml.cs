@@ -1,17 +1,6 @@
 ﻿using DataLayer.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Utilities;
 
 namespace WorldCupStatsViewer.Views
@@ -32,6 +21,14 @@ namespace WorldCupStatsViewer.Views
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
+            SaveSettings();
+
+            this.DialogResult = true;
+            this.Close();
+        }
+
+        private void SaveSettings()
+        {
             string? selectedGender = ((ComboBoxItem)cbGender.SelectedItem).Content.ToString();
             if (selectedGender != null)
                 category = CategoryHelper.GetCategory(selectedGender);
@@ -50,8 +47,11 @@ namespace WorldCupStatsViewer.Views
                     MessageBox.Show(ex.Message);
                 }
             }
+        }
 
-            this.DialogResult = true;
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = false;
             this.Close();
         }
     }

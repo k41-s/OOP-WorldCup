@@ -18,6 +18,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -92,5 +93,55 @@
                 SizeChanged="canvasPlayers_SizeChanged"
             />
         </Grid>
+
+        <Button 
+            Content="Close" 
+            FontSize="24" 
+            FontWeight="Medium"
+            Margin="10"
+            Grid.Row="6" 
+            Grid.Column="1" 
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Click="BtnClose_Click"
+            Height="50"
+            Width="100"
+        />
+
+        <TextBlock
+            Text="Category:"
+            FontSize="20"
+            FontWeight="Bold"
+            Grid.Column="0"
+            Grid.Row="6"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Margin="10"
+        />
+        
+        <TextBlock
+            Text="[category]"
+            FontSize="20"
+            Grid.Column="1"
+            Grid.Row="6"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            x:Name="tbCategory"
+            Margin="10"
+        />
+
+        <Button 
+            Content="Change settings" 
+            FontSize="24" 
+            FontWeight="Medium"
+            Margin="10"
+            Grid.Row="6" 
+            Grid.Column="0" 
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Click="BtnSettings_Click"
+            Height="50"
+            Width="200"
+        />
     </Grid>
 </Window>

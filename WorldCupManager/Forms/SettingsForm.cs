@@ -28,6 +28,11 @@ namespace WorldCupManager
                 ExitForm();
         }
 
+        private void ExitForm()
+        {
+            this.DialogResult = DialogResult.Cancel;
+        }
+
         private void ConfirmSettings()
         {
             if (cbCategory.SelectedItem == null || cbLanguage.SelectedItem == null)
@@ -42,28 +47,13 @@ namespace WorldCupManager
                 return; //return if invalid form
             }
 
-            Category category = CategoryHelper.GetCategory(cbCategory.SelectedItem.ToString());
-            string language = cbLanguage.SelectedItem.ToString();
+            Category? category = CategoryHelper.GetCategory(cbCategory.SelectedItem.ToString());
+            string? language = cbLanguage.SelectedItem.ToString();
 
-            Utility.SaveUserSettings(category, language);
+            Utility.SaveUserSettings(category.Value, language);
 
             this.DialogResult = DialogResult.OK;
             this.Close();
-        }
-
-        private void ExitForm()
-        {
-            using ExitConfirmationForm form = new();
-            DialogResult dialogResult = form.ShowDialog();
-
-            // Ok for confirmation of exiting
-            if (dialogResult == DialogResult.OK)
-            {
-                this.DialogResult = DialogResult.Cancel;
-                this.Close();
-            }
-            else if (dialogResult == DialogResult.Cancel) // Decided not to leave application
-                return;
         }
     }
 }

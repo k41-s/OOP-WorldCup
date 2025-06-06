@@ -16,10 +16,10 @@ namespace WorldCupManager
         private readonly Category _category;
 
         // On form load, "teams" gets filled, so warning ignored
-        public FavouriteTeamForm(IServiceProvider serviceProvider)
+        public FavouriteTeamForm(IDataService service)
         {
             InitializeComponent();
-            _dataService = serviceProvider.GetRequiredService<IDataService>();
+            _dataService = service;
 
             IDictionary<string, string> userSettings = Utility.LoadUserSettings();
             _category = CategoryHelper.GetCategory(userSettings["Category"]);

@@ -5,5 +5,11 @@
              >
     <Application.Resources>
         <DropShadowEffect x:Key="DropShadowEffect" ShadowDepth="5" Opacity="0.4" BlurRadius="10"/>
+
+        <!-- For loading window -->
+        <Style TargetType="Image">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="UseLayoutRounding" Value="True"/>
+        </Style>
     </Application.Resources>
 </Application>

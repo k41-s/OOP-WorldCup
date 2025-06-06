@@ -23,7 +23,7 @@ namespace WorldCupManager
         private MatchTeam? _selectedCountry;
         private string _teamName;
 
-        private readonly Category _category;
+        private Category _category;
 
         // Inject Service Provider and IDataService through constructor
         public RankingListForm(IServiceProvider serviceProvider)
@@ -54,6 +54,9 @@ namespace WorldCupManager
 
                 if (_selectedCountry != null)
                     _teamName = _selectedCountry.Country;
+
+                lblCategory.Text = CategoryHelper.GetCategoryAsString(_category);
+                lblTeamName.Text = _teamName;
 
                 _players = await GetPlayers();
 
@@ -193,18 +196,121 @@ namespace WorldCupManager
 
         private void btnExit_Click(object sender, EventArgs e)
         {
-            // First hide this form
-            this.Visible = false;
+            ExitForm();
+        }
 
+        private async void btnSettings_Click(object sender, EventArgs e)
+        {
             // Show settings form
             using SettingsForm settingsForm = new();
-            settingsForm.ShowDialog();
+            var result = settingsForm.ShowDialog();
 
-            // Setup this form for proper and safe closure
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
+            if(result == DialogResult.OK)
+            {
+                // Reload ranking list is settings saved
+                await ClearWindowAndResetValuesAsync();
+            }
+        }
 
-            return;
+        private async Task ClearWindowAndResetValuesAsync()
+        {
+            using (LoadingForm lf = new())
+            {
+                lf.Show();
+                lf.Refresh();
+
+                try
+                {
+                    // Clear UI controls
+                    flpPlayers.Controls.Clear();
+                    flpMatches.Controls.Clear();
+
+                    // Reset variables
+                    _playerStats = new List<PlayerRankingStats>();
+                    _matchStats = new List<MatchRankingStats>();
+                    _matches = new List<MatchData>();
+                    _players = new List<MatchPlayer>();
+                    _selectedCountryFifaCode = null;
+                    _selectedCountry = null;
+                    _teamName = string.Empty;
+
+                    // Reload settings
+                    IDictionary<string, string> userSettings = Utility.LoadUserSettings();
+                    Category newCat = CategoryHelper.GetCategory(userSettings["Category"]);
+
+                    // Only reload if category has changed
+                    if (newCat != _category)
+                    {
+                        _category = newCat;
+                    }
+                    lblCategory.Text = CategoryHelper.GetCategoryAsString(_category);
+
+                    // Reload team selection and match data
+                    _selectedCountryFifaCode = Utility.LoadFavouriteTeamCode();
+
+                    // Validate the team code exists in this category
+                    if (!string.IsNullOrEmpty(_selectedCountryFifaCode))
+                    {
+                        try
+                        {
+                            _matches = await _dataService.GetMatchDataByCountryAsync(_category, _selectedCountryFifaCode);
+                            _selectedCountry = Utility.GetTeamByFifaCode(_selectedCountryFifaCode, _matches);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Invalid team for new category
+                            MessageBox.Show("Selected favorite team is not available in this category. Please select a new one.", "Invalid Team", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            lf.Close();
+
+                            using FavouriteTeamForm form = new(_dataService);
+                            form.BringToFront();
+
+                            if (form.ShowDialog() == DialogResult.OK)
+                            {
+                                // Since fav team changed, players should also change
+                                using FavPlayersForm favPlayersForm = new(_dataService);
+                                favPlayersForm.ShowDialog();
+
+                                // Retry loading with new favorite team
+                                await ClearWindowAndResetValuesAsync();
+                            }
+
+                            return;
+                        }
+                    }
+
+
+                    if (_selectedCountry != null)
+                        _teamName = _selectedCountry.Country;
+                    lblTeamName.Text = _teamName;
+
+                    // Reload players
+                    _players = await GetPlayers();
+
+                    // Refill stats and update UI
+                    FillPlayerRankings();
+                    FillMatchRankings();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to reload data: {ex.Message}");
+                }
+            };
+        }
+
+        private void ExitForm()
+        {
+            using ExitConfirmationForm form = new();
+            DialogResult dialogResult = form.ShowDialog();
+
+            // Ok for confirmation of exiting
+            if (dialogResult == DialogResult.OK)
+            {
+                this.DialogResult = DialogResult.Cancel;
+                this.Close();
+            }
+            else if (dialogResult == DialogResult.Cancel) // Decided not to leave application
+                return;
         }
 
         private int currentPrintLine;
@@ -273,6 +379,5 @@ namespace WorldCupManager
             // Display success message
             MessageBox.Show("Printed successfully!");
         }
-
     }
 }

@@ -23,7 +23,7 @@ namespace WorldCupStatsViewer.Views
             tbName.Text = player.Name;
             tbNumber.Text = $"Shirt Number: {player.ShirtNumber}";
             tbPosition.Text = $"Position: {player.Position}";
-            tbCaptain.Text = player.Captain ? "Captain" : "";
+            tbCaptain.Text = $"Captain: {(player.Captain ? "True" : "False")}";
             tbGoals.Text = $"Goals this match: {goals}";
             tbYellowCards.Text = $"Yellow cards this match: {yellowCards}";
         }

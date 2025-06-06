@@ -21,6 +21,7 @@ namespace WorldCupStatsViewer.Views
         private Category _category;
         private IList<MatchTeam>? _allTeams;
         private MatchData? _currentMatch;
+        private IDictionary<string, string> _userSettings;
 
         private IList<MatchPlayer>? _lastFavPlayers;
         private IList<MatchPlayer>? _lastOppPlayers;
@@ -30,51 +31,66 @@ namespace WorldCupStatsViewer.Views
             InitializeComponent();
             _dataService = dataService;
 
-            IDictionary<string, string> userSettings = Utility.LoadUserSettings();
-            _category = CategoryHelper.GetCategory(userSettings["Category"]);
+            _userSettings = Utility.LoadUserSettings();
+            _category = CategoryHelper.GetCategory(_userSettings["Category"]);
+            tbCategory.Text = CategoryHelper.GetCategoryAsString(_category);
         }
 
         private async void NationalTeamView_Loaded(object sender, RoutedEventArgs e)
         {
-            // Load favorite team from file
+            Window loading = new LoadingWindow();
+            loading.Show();
+            loading.BringIntoView();
+
             try
             {
-                _selectedTeamFifaCode = Utility.LoadFavouriteTeamCode();
+                // Load favorite team from file
+                try
+                {
+                    _selectedTeamFifaCode = Utility.LoadFavouriteTeamCode();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error loading favourite team: {ex.Message}");
+                    return;
+                }
+
+                _allMatches = await _dataService.GetMatchDataAsync(_category);
+
+                _allTeams = _allMatches
+                    .Select(m => m.HomeTeam)
+                    .Concat(_allMatches.Select(m => m.AwayTeam))
+                    .GroupBy(t => t.FifaCode) // Remove duplicates using FIFA code
+                    .Select(g => g.First()) // Take first team with each unique code
+                    .ToList();
+
+                IList<MatchTeam> opponents = Utility.GetOpponents(_selectedTeamFifaCode, _allMatches);
+
+                cbFavoriteTeam.ItemsSource = _allTeams;
+                cbOpponentTeam.ItemsSource = opponents;
+
+                // Auto select favorite team by matching FIFA code
+                int defaultIndex = _allTeams.ToList().FindIndex(item => item.ToString().EndsWith($"({_selectedTeamFifaCode})"));
+                if (defaultIndex != -1)
+                {
+                    cbFavoriteTeam.SelectedIndex = defaultIndex;
+                }
+                cbOpponentTeam.SelectedIndex = 0;
+
+                CalcMatchResultAndDisplayPlayers();
+
+                // Apply football pitch background
+                pitchImg.Source = new BitmapImage(new Uri(Utility.footballPitchImgPath));
             }
-            catch (Exception ex)
+            finally
             {
-                MessageBox.Show($"Error loading favourite team: {ex.Message}");
-                return;
+                loading.Close();
             }
-
-            _allMatches = await _dataService.GetMatchDataAsync(_category);
-
-            _allTeams = _allMatches
-                .Select(m => m.HomeTeam)
-                .Concat(_allMatches.Select(m => m.AwayTeam))
-                .GroupBy(t => t.FifaCode) // Step 2: Remove duplicates using FIFA code
-                .Select(g => g.First()) // Take first team with each unique code
-                .ToList();
-
-            IList<MatchTeam> opponents = Utility.GetOpponents(_selectedTeamFifaCode, _allMatches);
-
-            cbFavoriteTeam.ItemsSource = _allTeams;
-            cbOpponentTeam.ItemsSource = opponents;
-
-            // Auto select favorite team by matching FIFA code
-            int defaultIndex = _allTeams.ToList().FindIndex(item => item.ToString().EndsWith($"({_selectedTeamFifaCode})"));
-            if (defaultIndex != -1)
-            {
-                cbFavoriteTeam.SelectedIndex = defaultIndex;
-            }
-
-            // Apply football pitch background
-            pitchImg.Source = new BitmapImage(new Uri(Utility.footballPitchImgPath));
         }
 
         private void ComboBoxes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(_allMatches == null)
+            if (_allMatches == null)
             {
                 MessageBox.Show("Matches list is null");
                 return;
@@ -82,7 +98,7 @@ namespace WorldCupStatsViewer.Views
 
             // Update the Selected team and fifa code
             MatchTeam? selectedTeam = cbFavoriteTeam.SelectedItem as MatchTeam;
-            if(selectedTeam == null)
+            if (selectedTeam == null)
             {
                 tbMatchResult.Text = "No team selected.";
                 return;
@@ -102,20 +118,35 @@ namespace WorldCupStatsViewer.Views
                 IList<MatchTeam> opponents = Utility.GetOpponents(_selectedTeamFifaCode, _allMatches);
 
                 cbOpponentTeam.ItemsSource = opponents;
-                cbOpponentTeam.SelectedItem = null;
 
-                // Reset the field
-                canvasPlayers.Children.Clear();
+                // Auto select top of list
+                if (opponents.Any())
+                    cbOpponentTeam.SelectedIndex = 0;
 
-                tbFavTeam.Text = "Favorite Team";
-                tbOppTeam.Text = "Opponent Team";
-                tbMatchResult.Text = "";
-                return; // Don’t continue — we wait until both boxes are selected
+                CalcMatchResultAndDisplayPlayers();
             }
 
             // Only calculate result if both are selected and opponent is sender
             if (sender == cbOpponentTeam && cbOpponentTeam.SelectedItem != null)
             {
+                CalcMatchResultAndDisplayPlayers();
+            }
+        }
+
+        private void CalcMatchResultAndDisplayPlayers()
+        {
+            Window loading = new LoadingWindow();
+            loading.Show();
+            loading.BringIntoView();
+
+            try
+            {
+                if (_allMatches == null)
+                {
+                    MessageBox.Show("Matches list is null");
+                    return;
+                }
+
                 MatchTeam? opponentTeam = cbOpponentTeam.SelectedItem as MatchTeam;
                 if (opponentTeam == null)
                 {
@@ -146,11 +177,21 @@ namespace WorldCupStatsViewer.Views
                 // Populate the pitch with players
                 bool isFavoriteHome = _currentMatch.HomeTeam.FifaCode == _selectedTeamFifaCode;
 
-                IList<MatchPlayer> favoritePlayers = isFavoriteHome ? _currentMatch.HomeTeamStatistics.StartingEleven : _currentMatch.AwayTeamStatistics.StartingEleven;
-                IList<MatchPlayer> opponentPlayers = isFavoriteHome ? _currentMatch.AwayTeamStatistics.StartingEleven : _currentMatch.HomeTeamStatistics.StartingEleven;
+                IList<MatchPlayer>? favoritePlayers = isFavoriteHome ? _currentMatch.HomeTeamStatistics.StartingEleven : _currentMatch.AwayTeamStatistics.StartingEleven;
+                IList<MatchPlayer>? opponentPlayers = isFavoriteHome ? _currentMatch.AwayTeamStatistics.StartingEleven : _currentMatch.HomeTeamStatistics.StartingEleven;
+
+                if (favoritePlayers == null || opponentPlayers == null)
+                {
+                    MessageBox.Show("favorite players or opponent players are null");
+                    return;
+                }
 
                 DisplayPlayersOnPitch(favoritePlayers, true);
                 DisplayPlayersOnPitch(opponentPlayers, false);
+            }
+            finally
+            {
+                loading.Close();
             }
         }
 
@@ -171,7 +212,7 @@ namespace WorldCupStatsViewer.Views
             double canvasHeight = canvasPlayers.ActualHeight;
 
             // Try again if pitch not set yet
-            if(canvasWidth == 0 || canvasHeight== 0)
+            if (canvasWidth == 0 || canvasHeight == 0)
             {
                 // (_, _) discards the Loaded delegate necessary params
                 canvasPlayers.Loaded += (_, _) => DisplayPlayersOnPitch(players, isFavTeam);
@@ -217,7 +258,7 @@ namespace WorldCupStatsViewer.Views
 
                     Control? control = GetPlayerPitchControl(playersInPosition[i]);
 
-                    if(control == null)
+                    if (control == null)
                         return;
 
                     // Put player control in appropriate position
@@ -231,7 +272,7 @@ namespace WorldCupStatsViewer.Views
 
         private PlayerOnFieldControl? GetPlayerPitchControl(MatchPlayer matchPlayer)
         {
-            if(_currentMatch == null)
+            if (_currentMatch == null)
             {
                 MessageBox.Show("Current match invalid/null");
                 return null;
@@ -283,6 +324,129 @@ namespace WorldCupStatsViewer.Views
                 DisplayPlayersOnPitch(_lastFavPlayers, true);
             if (_lastOppPlayers != null)
                 DisplayPlayersOnPitch(_lastOppPlayers, false);
+        }
+
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Window window = new ExitConfirmationWindow();
+            bool? result = window.ShowDialog();
+
+            if (!result.HasValue)
+                return;
+
+            // If user confirms they want to exit
+            if (result.Value)
+            {
+                this.Close();
+                return;
+            }
+
+            // Do nothing if they do not confirm
+            return;
+        }
+
+        private async void BtnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            Window window = new InitialSettingsView();
+
+            bool? result = window.ShowDialog();
+
+            if (!result.HasValue)
+                return;
+
+            // If user changed settings
+            if (result.Value)
+            {
+                await ClearWindowAndResetValuesAsync();
+
+                return;
+            }
+
+            // If nothing changed
+            return;
+        }
+
+        private async Task ClearWindowAndResetValuesAsync()
+        {
+            Window loadingWindow = new LoadingWindow();
+            loadingWindow.Show();
+            loadingWindow.BringIntoView();
+            try
+            {
+                // Reload user settings
+                _userSettings = Utility.LoadUserSettings();
+                _category = CategoryHelper.GetCategory(_userSettings["Category"]);
+                tbCategory.Text = CategoryHelper.GetCategoryAsString(_category);
+
+                // Reload team code
+                try
+                {
+                    _selectedTeamFifaCode = Utility.LoadFavouriteTeamCode();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error loading favourite team: {ex.Message}");
+                    return;
+                }
+
+                // 3. Clear controls
+                cbFavoriteTeam.ItemsSource = null;
+                cbOpponentTeam.ItemsSource = null;
+                canvasPlayers.Children.Clear();
+                tbMatchResult.Text = "";
+                tbFavTeam.Text = "Favorite Team";
+                tbOppTeam.Text = "Opponent Team";
+
+                // 4. Reset cached match/player data
+                _lastFavPlayers = null;
+                _lastOppPlayers = null;
+                _currentMatch = null;
+
+                // 5. Reload match data and teams
+                try
+                {
+                    _allMatches = await _dataService.GetMatchDataAsync(_category);
+
+                    _allTeams = _allMatches
+                        .Select(m => m.HomeTeam)
+                        .Concat(_allMatches.Select(m => m.AwayTeam))
+                        .GroupBy(t => t.FifaCode)
+                        .Select(g => g.First())
+                        .ToList();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error loading matches: {ex.Message}");
+                    return;
+                }
+
+                // Check if the selected favorite team is valid for the selected category
+                bool favTeamExistsInCategory = _allTeams.Any(t => t.FifaCode == _selectedTeamFifaCode);
+                if (!favTeamExistsInCategory)
+                {
+                    MessageBox.Show("Your favorite team has not played in the selected championship.\nPlease choose a different category.");
+                    tbMatchResult.Text = "Select a favorite team above";
+                }
+
+                IList<MatchTeam> opponents = Utility.GetOpponents(_selectedTeamFifaCode, _allMatches);
+
+                cbFavoriteTeam.ItemsSource = _allTeams;
+                cbOpponentTeam.ItemsSource = opponents;
+
+                // 6. Auto-select favorite team again
+                int defaultIndex = _allTeams.ToList().FindIndex(item => item.ToString().EndsWith($"({_selectedTeamFifaCode})"));
+                if (defaultIndex != -1)
+                {
+                    cbFavoriteTeam.SelectedIndex = defaultIndex;
+                }
+
+                // 7. Reload pitch background if needed
+                pitchImg.Source = new BitmapImage(new Uri(Utility.footballPitchImgPath));
+            }
+            finally
+            {
+                loadingWindow.Close();
+            }
         }
     }
 }

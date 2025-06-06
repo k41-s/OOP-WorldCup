@@ -40,8 +40,6 @@ public partial class App : Application
                 return;
             }
 
-            // Fix this, settings need saving I believe
-
             // Reload settings after saving
             settings = Utility.LoadUserSettings();
         }

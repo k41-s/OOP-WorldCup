@@ -1,0 +1,60 @@
+﻿<Window x:Class="WorldCupStatsViewer.Views.ExitConfirmationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WorldCupStatsViewer.Views"
+        mc:Ignorable="d"
+        Title="Exit Confirmation"
+        Height="200"
+        Width="500"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock
+            Text="Are you sure you want to exit?"
+            Margin="20"
+            FontSize="26"
+            FontWeight="Bold"
+            HorizontalAlignment="Center"
+            Grid.Row="0"
+            Grid.ColumnSpan="2"
+        />
+
+        <Button
+            Content="Yes"
+            FontSize="22"
+            FontWeight="Medium"
+            Height="50"
+            Width="150"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Margin="20"
+            Grid.Row="1"
+            Grid.Column="0"
+            Click="BtnConfirmExit_Click"
+        />
+        
+        <Button
+            Content="No, go back"
+            FontSize="22"
+            FontWeight="Medium"
+            Height="50"
+            Width="150"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Margin="20"
+            Grid.Row="1"
+            Grid.Column="1"
+            Click="BtnDenyExit_Click"
+        />
+    </Grid>
+</Window>

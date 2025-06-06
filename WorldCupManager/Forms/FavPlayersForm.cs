@@ -21,11 +21,11 @@ namespace WorldCupManager
         // Store selected category and fav team
         private readonly Category _category;
 
-        public FavPlayersForm(IServiceProvider provider)
+        public FavPlayersForm(IDataService service)
         {
             InitializeComponent();
 
-            _service = provider.GetRequiredService<IDataService>();
+            _service = service;
 
             IDictionary<string, string> userSettings = Utility.LoadUserSettings();
             _category = CategoryHelper.GetCategory(userSettings["Category"]);
