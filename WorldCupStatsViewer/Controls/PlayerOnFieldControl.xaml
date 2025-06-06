@@ -6,12 +6,13 @@
              xmlns:local="clr-namespace:WorldCupStatsViewer.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="100"
-             Height="70" Width="65">
+             Height="70" Width="65"
+             MouseLeftButtonUp="OnPlayerClick">
     <Border BorderBrush="White" BorderThickness="1" CornerRadius="5" Background="Transparent">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="1">
             <Image x:Name="imgPlayer" Height="20" Width="20" Margin="2"/>
-            <TextBlock x:Name="txtNumber" FontWeight="Bold" Foreground="White" TextAlignment="Center"/>
-            <TextBlock x:Name="txtName" FontSize="10" Foreground="White" TextAlignment="Center" TextWrapping="Wrap"/>
+            <TextBlock x:Name="tbNumber" FontWeight="Bold" Foreground="White" TextAlignment="Center"/>
+            <TextBlock x:Name="tbName" FontSize="10" Foreground="White" TextAlignment="Center" TextWrapping="Wrap"/>
         </StackPanel>
     </Border>
 </UserControl>

@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DataLayer.Models.Match;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Utilities;
+using WorldCupStatsViewer.Views;
 
 namespace WorldCupStatsViewer.Controls
 {
@@ -21,17 +14,50 @@ namespace WorldCupStatsViewer.Controls
     /// </summary>
     public partial class PlayerOnFieldControl : UserControl
     {
-        public PlayerOnFieldControl(string name, long number, string? imagePath = null)
+        private readonly MatchPlayer _player;
+        private readonly string _imagePath;
+        private readonly MatchData _matchData;
+
+        public PlayerOnFieldControl(MatchPlayer player, MatchData matchData)
         {
             InitializeComponent();
-            txtName.Text = name;
-            txtNumber.Text = $"{number}";
 
-            string path = string.IsNullOrEmpty(imagePath)
-            ? Utility.defaultNoPlayerImgPath
-            : imagePath;
+            _player = player;
+            _matchData = matchData;
+            _imagePath = Utility.GetPlayerImagePath(player.Name);
 
-            imgPlayer.Source = new BitmapImage(new Uri(path, UriKind.RelativeOrAbsolute));
+            tbName.Text = player.Name;
+            tbNumber.Text = $"{player.ShirtNumber}";
+            imgPlayer.Source = new BitmapImage(new Uri(_imagePath, UriKind.RelativeOrAbsolute));
+        }
+
+        private void OnPlayerClick(object sender, MouseButtonEventArgs e)
+        {
+            ShowPlayerInfo(_player, _matchData);
+        }
+
+        private void ShowPlayerInfo(MatchPlayer player, MatchData matchData)
+        {
+            // Count goals and yellow cards for this player
+            int goals = Utility.CalcGoalsForPlayerInMatch(player, matchData);
+            int yellowCards = Utility.CalcYellowCardsForPlayerInMatch(player, matchData);
+
+            Window window = new PlayerOverviewWindow(_player, _imagePath, goals, yellowCards);
+            
+            // Start slightly offscreen vertically
+            window.Top += 100;
+            window.Opacity = 0;
+            window.Show();
+
+            // Animate slide in and fade in simultaneously
+            var slideIn = new DoubleAnimation(window.Top, window.Top - 100, TimeSpan.FromSeconds(0.3))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.3));
+
+            window.BeginAnimation(Window.TopProperty, slideIn);
+            window.BeginAnimation(Window.OpacityProperty, fadeIn);
         }
     }
 }

@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:WorldCupStatsViewer"
              >
     <Application.Resources>
-         
+        <DropShadowEffect x:Key="DropShadowEffect" ShadowDepth="5" Opacity="0.4" BlurRadius="10"/>
     </Application.Resources>
 </Application>

@@ -8,6 +8,7 @@
         Title="National Team Overview" 
         Height="700" 
         Width="800"
+        Loaded="NationalTeamView_Loaded"
         WindowStartupLocation="CenterScreen">
     <Grid Margin="20">
         <Grid.RowDefinitions>

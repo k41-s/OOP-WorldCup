@@ -350,5 +350,31 @@ namespace Utilities
 
             return appearances;
         }
+
+        public static int CalcGoalsForPlayerInMatch(MatchPlayer player, MatchData match)
+        {
+            IEnumerable<TeamEvent> relevantEvents = match.HomeTeamEvents
+                .Concat(match.AwayTeamEvents);
+
+            return relevantEvents.Count(e =>
+                e.Player.Equals(player.Name, StringComparison.OrdinalIgnoreCase) &&
+                (e.TypeOfEvent == TypeOfEvent.Goal 
+                    || e.TypeOfEvent == TypeOfEvent.GoalPenalty
+                )
+            );
+        }
+
+        public static int CalcYellowCardsForPlayerInMatch(MatchPlayer player, MatchData match)
+        {
+            IEnumerable<TeamEvent> relevantEvents = match.HomeTeamEvents
+                .Concat(match.AwayTeamEvents);
+
+            return relevantEvents.Count(e =>
+                e.Player.Equals(player.Name, StringComparison.OrdinalIgnoreCase) &&
+                (e.TypeOfEvent == TypeOfEvent.YellowCard 
+                    || e.TypeOfEvent == TypeOfEvent.YellowCardSecond
+                )
+            );
+        }
     }
 }

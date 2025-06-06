@@ -1,7 +1,6 @@
 ﻿using DataLayer.Enums;
 using DataLayer.Models.Match;
 using DataLayer.Services;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -21,6 +20,7 @@ namespace WorldCupStatsViewer.Views
         private string? _selectedTeamFifaCode;
         private Category _category;
         private IList<MatchTeam>? _allTeams;
+        private MatchData? _currentMatch;
 
         private IList<MatchPlayer>? _lastFavPlayers;
         private IList<MatchPlayer>? _lastOppPlayers;
@@ -32,8 +32,6 @@ namespace WorldCupStatsViewer.Views
 
             IDictionary<string, string> userSettings = Utility.LoadUserSettings();
             _category = CategoryHelper.GetCategory(userSettings["Category"]);
-
-            Loaded += NationalTeamView_Loaded;
         }
 
         private async void NationalTeamView_Loaded(object sender, RoutedEventArgs e)
@@ -126,19 +124,19 @@ namespace WorldCupStatsViewer.Views
                 }
                 string opponentCode = opponentTeam.FifaCode;
 
-                MatchData? match = _allMatches.FirstOrDefault(m =>
+                _currentMatch = _allMatches.FirstOrDefault(m =>
                     (m.HomeTeam.FifaCode == _selectedTeamFifaCode && m.AwayTeam.FifaCode == opponentCode) ||
                     (m.HomeTeam.FifaCode == opponentCode && m.AwayTeam.FifaCode == _selectedTeamFifaCode)
                 );
 
-                if (match == null)
+                if (_currentMatch == null)
                 {
                     tbMatchResult.Text = "No match found.";
                     return;
                 }
 
-                int favoriteGoals = Utility.CalcGoalsForTeam(match, _selectedTeamFifaCode);
-                int opponentGoals = Utility.CalcGoalsForTeam(match, opponentCode);
+                int favoriteGoals = Utility.CalcGoalsForTeam(_currentMatch, _selectedTeamFifaCode);
+                int opponentGoals = Utility.CalcGoalsForTeam(_currentMatch, opponentCode);
 
                 tbMatchResult.Text = $"{favoriteGoals} : {opponentGoals}";
 
@@ -146,10 +144,10 @@ namespace WorldCupStatsViewer.Views
                 tbOppTeam.Text = opponentTeam.Country;
 
                 // Populate the pitch with players
-                bool isFavoriteHome = match.HomeTeam.FifaCode == _selectedTeamFifaCode;
+                bool isFavoriteHome = _currentMatch.HomeTeam.FifaCode == _selectedTeamFifaCode;
 
-                IList<MatchPlayer> favoritePlayers = isFavoriteHome ? match.HomeTeamStatistics.StartingEleven : match.AwayTeamStatistics.StartingEleven;
-                IList<MatchPlayer> opponentPlayers = isFavoriteHome ? match.AwayTeamStatistics.StartingEleven : match.HomeTeamStatistics.StartingEleven;
+                IList<MatchPlayer> favoritePlayers = isFavoriteHome ? _currentMatch.HomeTeamStatistics.StartingEleven : _currentMatch.AwayTeamStatistics.StartingEleven;
+                IList<MatchPlayer> opponentPlayers = isFavoriteHome ? _currentMatch.AwayTeamStatistics.StartingEleven : _currentMatch.HomeTeamStatistics.StartingEleven;
 
                 DisplayPlayersOnPitch(favoritePlayers, true);
                 DisplayPlayersOnPitch(opponentPlayers, false);
@@ -217,7 +215,10 @@ namespace WorldCupStatsViewer.Views
                     double yRatio = ((i + 1.0) / (playersInPosition.Count + 1));
                     double y = canvasHeight * yRatio;
 
-                    Control control = GetPlayerPitchControl(playersInPosition[i]);
+                    Control? control = GetPlayerPitchControl(playersInPosition[i]);
+
+                    if(control == null)
+                        return;
 
                     // Put player control in appropriate position
                     Canvas.SetLeft(control, x - control.Width / 2);
@@ -228,16 +229,14 @@ namespace WorldCupStatsViewer.Views
             }
         }
 
-        private PlayerOnFieldControl GetPlayerPitchControl(MatchPlayer matchPlayer)
+        private PlayerOnFieldControl? GetPlayerPitchControl(MatchPlayer matchPlayer)
         {
-            string name = matchPlayer.Name;
-            long shirtNumber = matchPlayer.ShirtNumber;
-            string imgPath = Utility.GetPlayerImagePath(name);
-
-            return new PlayerOnFieldControl(
-                name,
-                shirtNumber,
-                imgPath);
+            if(_currentMatch == null)
+            {
+                MessageBox.Show("Current match invalid/null");
+                return null;
+            }
+            return new PlayerOnFieldControl(matchPlayer, _currentMatch);
         }
 
         private void OnFavoriteTeamInfoClick(object sender, RoutedEventArgs e)

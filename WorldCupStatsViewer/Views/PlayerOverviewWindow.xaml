@@ -1,0 +1,53 @@
+﻿<Window x:Class="WorldCupStatsViewer.Views.PlayerOverviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WorldCupStatsViewer.Views"
+        mc:Ignorable="d"
+        Title="Player Overview" 
+        Height="400" 
+        Width="300"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="20">
+        
+        <Grid.RowDefinitions>
+            <!-- Player name -->
+            <RowDefinition Height="Auto"/>
+            <!-- Player info -->
+            <RowDefinition Height="*"/>
+            <!-- Close btn -->
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Player Name -->
+        <TextBlock 
+            x:Name="tbName" 
+            FontSize="24" 
+            FontWeight="Bold" 
+            TextAlignment="Center"
+            HorizontalAlignment="Center"
+        />
+        
+        <!-- Info Area -->
+        <StackPanel Grid.Row="1" Margin="0,20,0,0" HorizontalAlignment="Center">
+            <Image x:Name="imgPlayer" Width="100" Height="100" Margin="0,0,0,20"/>
+
+            <TextBlock x:Name="tbNumber" FontSize="16"/>
+            <TextBlock x:Name="tbPosition" FontSize="16"/>
+            <TextBlock x:Name="tbCaptain" FontSize="16"/>
+            <TextBlock x:Name="tbGoals" FontSize="16"/>
+            <TextBlock x:Name="tbYellowCards" FontSize="16"/>
+        </StackPanel>
+
+        <!-- Close Button -->
+        <Button 
+            Content="Close"
+            Grid.Row="2"
+            HorizontalAlignment="Right"
+            Width="100"
+            Click="BtnClose_Click"
+        />
+    </Grid>
+</Window>
