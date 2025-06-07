@@ -3,13 +3,23 @@
 ## Overview
 This is a .NET-based desktop application suite for displaying statistics from the FIFA World Cup 2018 (Men) and FIFA World Cup 2019 (Women). It consists of the following components:
 
-1. **Windows Forms Application** – Interactive UI for selecting favorite teams and players, viewing rankings, and managing preferences.
-2. **WPF Application** – Responsive interface with match overviews, lineup visualization, and animated player detail windows.
-3. **Data Layer (Class Library)** – Handles data access from the API or local JSON files and provides shared business logic.
+1. **Data Layer (Class Library)** – Handles data access from the API or local JSON files and provides shared business logic.
+2. **Windows Forms Application** – Interactive UI for selecting favorite teams and players, viewing rankings, and managing preferences.
+3. **WPF Application** – Responsive interface with match overviews, lineup visualization, and animated player detail windows.
 
 ---
 
 ## Features
+
+### Data Layer (Class Library)
+- Retrieves data from either the **official API** or **local JSON files**
+- Supports **asynchronous data loading**
+- Centralized storage and parsing of:
+  - Match data
+  - Team statistics
+  - Player events
+- Loads and saves **user preferences** and **favorites** using local text files
+- Graceful **error handling** for unavailable data or missing files
 
 ### Windows Forms Application
 - Select **preferred championship** (Men or Women) and **language** (English or Croatian)
@@ -34,16 +44,6 @@ This is a .NET-based desktop application suite for displaying statistics from th
 - Click players to open **animated player detail windows**
 - All user preferences and selections are **synchronized** with the Windows Forms application
 
-### Data Layer (Class Library)
-- Retrieves data from either the **official API** or **local JSON files**
-- Supports **asynchronous data loading**
-- Centralized storage and parsing of:
-  - Match data
-  - Team statistics
-  - Player events
-- Loads and saves **user preferences** and **favorites** using local text files
-- Graceful **error handling** for unavailable data or missing files
-
 ---
 
 ## API Endpoints
@@ -63,7 +63,7 @@ This is a .NET-based desktop application suite for displaying statistics from th
 
 1. **Clone the Repository**
    ```sh
-   git clone https://github.com/your-repo-url
+   git clone https://github.com/k41-s/OOP-WorldCup
    cd WorldCupStatistics
    ```
 
@@ -74,6 +74,7 @@ This is a .NET-based desktop application suite for displaying statistics from th
 3. **Build & Run**
    - Set `WinFormsApp` or `WpfApp` as the startup project
    - Build the solution and run the application
+   - Note: The WPF app relies on some data saved from the WinForms app
 
 4. **Configuration**
    - Create or modify `config.txt` to set:
@@ -99,6 +100,3 @@ This is a .NET-based desktop application suite for displaying statistics from th
 - Windows Forms
 - Windows Presentation Foundation (WPF)
 - Newtonsoft.Json
-- System.Text.Json
-- PrintDocument API
-- Local file I/O
