@@ -48,10 +48,10 @@ This is a .NET-based desktop application suite for displaying statistics from th
 
 ## API Endpoints
 
-- [Men's Team Results](https://worldcup-vua.nullbit.hr/men/teams/results)
-- [Women's Team Results](https://worldcup-vua.nullbit.hr/women/teams/results)
-- [Men's Matches](https://worldcup-vua.nullbit.hr/men/matches)
-- [Women's Matches](https://worldcup-vua.nullbit.hr/women/matches)
+- https://worldcup-vua.nullbit.hr/men/teams/results
+- https://worldcup-vua.nullbit.hr/women/teams/results
+- https://worldcup-vua.nullbit.hr/men/matches
+- https://worldcup-vua.nullbit.hr/women/matches
 - Matches by country (example):
   - `https://worldcup-vua.nullbit.hr/men/matches/country?fifa_code=ENG`
 
@@ -63,7 +63,7 @@ This is a .NET-based desktop application suite for displaying statistics from th
 
 1. **Clone the Repository**
    ```sh
-   git clone [https://github.com/k41-s/OOP-WorldCup](https://github.com/k41-s/OOP-WorldCup.git)
+   git clone https://github.com/k41-s/OOP-WorldCup.git
    cd WorldCupStatistics
    ```
 
