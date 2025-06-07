@@ -63,7 +63,7 @@ This is a .NET-based desktop application suite for displaying statistics from th
 
 1. **Clone the Repository**
    ```sh
-   git clone https://github.com/k41-s/OOP-WorldCup
+   git clone [https://github.com/k41-s/OOP-WorldCup](https://github.com/k41-s/OOP-WorldCup.git)
    cd WorldCupStatistics
    ```
 
