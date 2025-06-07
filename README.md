@@ -48,6 +48,9 @@ This is a .NET-based desktop application suite for displaying statistics from th
 
 ## API Endpoints
 
+**Swagger UI Interface**
+https://worldcup-vua.nullbit.hr/api_docs/
+
 - https://worldcup-vua.nullbit.hr/men/teams/results
 - https://worldcup-vua.nullbit.hr/women/teams/results
 - https://worldcup-vua.nullbit.hr/men/matches
