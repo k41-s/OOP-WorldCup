@@ -23,6 +23,9 @@ namespace WorldCupStatsViewer.Views
         private MatchData? _currentMatch;
         private IDictionary<string, string> _userSettings;
 
+        // Resolution
+        private string? _displayMode;
+
         private IList<MatchPlayer>? _lastFavPlayers;
         private IList<MatchPlayer>? _lastOppPlayers;
 
@@ -34,6 +37,8 @@ namespace WorldCupStatsViewer.Views
             _userSettings = Utility.LoadUserSettings();
             _category = CategoryHelper.GetCategory(_userSettings["Category"]);
             tbCategory.Text = CategoryHelper.GetCategoryAsString(_category);
+
+            _displayMode = _userSettings["DisplayMode"];
         }
 
         private async void NationalTeamView_Loaded(object sender, RoutedEventArgs e)
@@ -44,6 +49,8 @@ namespace WorldCupStatsViewer.Views
 
             try
             {
+                ApplyDisplayMode();
+
                 // Load favorite team from file
                 try
                 {
@@ -51,8 +58,7 @@ namespace WorldCupStatsViewer.Views
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error loading favourite team: {ex.Message}");
-                    return;
+                    // Fav team wont be defaulted, do nothing
                 }
 
                 _allMatches = await _dataService.GetMatchDataAsync(_category);
@@ -70,10 +76,22 @@ namespace WorldCupStatsViewer.Views
                 cbOpponentTeam.ItemsSource = opponents;
 
                 // Auto select favorite team by matching FIFA code
-                int defaultIndex = _allTeams.ToList().FindIndex(item => item.ToString().EndsWith($"({_selectedTeamFifaCode})"));
-                if (defaultIndex != -1)
+                try
                 {
-                    cbFavoriteTeam.SelectedIndex = defaultIndex;
+                    int defaultIndex = _allTeams.ToList().FindIndex(item => item.ToString().EndsWith($"({_selectedTeamFifaCode})"));
+                    if (defaultIndex != -1)
+                    {
+                        cbFavoriteTeam.SelectedIndex = defaultIndex;
+                    }
+                    else
+                    {
+                        cbFavoriteTeam.SelectedIndex = 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"No favorite team found, default team has been set: {ex.Message}");
+                    cbFavoriteTeam.SelectedIndex = 0;
                 }
                 cbOpponentTeam.SelectedIndex = 0;
 
@@ -85,6 +103,29 @@ namespace WorldCupStatsViewer.Views
             finally
             {
                 loading.Close();
+            }
+        }
+
+        private void ApplyDisplayMode()
+        {
+            // No need to handle cases of no stored displayMode, defaults are in code
+            if (!string.IsNullOrEmpty(_displayMode))
+            {
+                if (_displayMode.Trim().ToLower() == "fullscreen")
+                    this.WindowState = WindowState.Maximized;
+                else
+                {
+                    string[] displaySettings = _displayMode.Split('x');
+
+                    bool parseWidth = int.TryParse(displaySettings[0], out int width);
+                    bool parseHeight = int.TryParse(displaySettings[1], out int height);
+
+                    if (parseWidth && parseHeight)
+                    {
+                        this.Width = width;
+                        this.Height = height;
+                    }
+                }
             }
         }
 
@@ -378,6 +419,10 @@ namespace WorldCupStatsViewer.Views
                 _category = CategoryHelper.GetCategory(_userSettings["Category"]);
                 tbCategory.Text = CategoryHelper.GetCategoryAsString(_category);
 
+                _displayMode = _userSettings["DisplayMode"];
+
+                ApplyDisplayMode();
+
                 // Reload team code
                 try
                 {
@@ -385,8 +430,7 @@ namespace WorldCupStatsViewer.Views
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error loading favourite team: {ex.Message}");
-                    return;
+                    // Fav team wont be defaulted, do nothing
                 }
 
                 // 3. Clear controls
@@ -433,11 +477,23 @@ namespace WorldCupStatsViewer.Views
                 cbFavoriteTeam.ItemsSource = _allTeams;
                 cbOpponentTeam.ItemsSource = opponents;
 
-                // 6. Auto-select favorite team again
-                int defaultIndex = _allTeams.ToList().FindIndex(item => item.ToString().EndsWith($"({_selectedTeamFifaCode})"));
-                if (defaultIndex != -1)
+                // Auto-select favorite team again
+                try
                 {
-                    cbFavoriteTeam.SelectedIndex = defaultIndex;
+                    int defaultIndex = _allTeams.ToList().FindIndex(item => item.ToString().EndsWith($"({_selectedTeamFifaCode})"));
+                    if (defaultIndex != -1)
+                    {
+                        cbFavoriteTeam.SelectedIndex = defaultIndex;
+                    }
+                    else
+                    {
+                        cbFavoriteTeam.SelectedIndex = 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"No favorite team found, default team has been set: {ex.Message}");
+                    cbFavoriteTeam.SelectedIndex = 0;
                 }
 
                 // 7. Reload pitch background if needed

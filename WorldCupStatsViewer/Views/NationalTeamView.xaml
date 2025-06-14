@@ -6,10 +6,10 @@
         xmlns:local="clr-namespace:WorldCupStatsViewer.Views"
         mc:Ignorable="d"
         Title="National Team Overview" 
-        Height="700" 
-        Width="800"
+        Height="700" Width="800"
         Loaded="NationalTeamView_Loaded"
         WindowStartupLocation="CenterScreen">
+    <!-- Default height and width in case of no settings -->
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

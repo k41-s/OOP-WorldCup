@@ -20,11 +20,20 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-        InitUserSettings();
-        ShowNationalTeamOverview();
+
+        // Prevent app from shutting down when settings window closes
+        Application.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+        bool settingsValid = InitUserSettings();
+
+        // Only show overview if settings saved properly
+        if (settingsValid)
+            ShowNationalTeamOverview();
+        else
+            Shutdown();
     }
 
-    private void InitUserSettings()
+    private bool InitUserSettings()
     {
         IDictionary<string, string> settings = Utility.LoadUserSettings();
 
@@ -34,10 +43,10 @@ public partial class App : Application
             var initialSettingsView = new InitialSettingsView();
             bool? result = initialSettingsView.ShowDialog();
 
+            // not true
             if (result != true)
             {
-                Shutdown(); // User closed the window without saving
-                return;
+                return false; // User closed the window without saving
             }
 
             // Reload settings after saving
@@ -50,11 +59,16 @@ public partial class App : Application
             Thread.CurrentThread.CurrentCulture = new CultureInfo(language == "Croatian" ? "hr" : "en");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(language == "Croatian" ? "hr" : "en");
         }
+
+        return true;
     }
 
     private void ShowNationalTeamOverview()
     {
         Window window = new NationalTeamView(_dataService);
+        Application.Current.MainWindow = window;
+
+        Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
         window.Show();
     }
 }
