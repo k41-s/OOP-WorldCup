@@ -105,7 +105,7 @@ namespace WorldCupManager
 
 
         // At this point loading the whole team data here is unnecessary, but func will stay in case it is needed
-        public async Task<Team>? LoadFavouriteTeam()
+        public async Task<Team?> LoadFavouriteTeam()
         {
             string? teamCode = Utility.LoadFavouriteTeamCode();
 
@@ -199,8 +199,8 @@ namespace WorldCupManager
             if (e.Data.GetData(typeof(PlayerControl)) is not PlayerControl draggedPlayer)
                 return;
 
-            FlowLayoutPanel fromPanel = draggedPlayer.Parent as FlowLayoutPanel;
-            FlowLayoutPanel toPanel = sender as FlowLayoutPanel;
+            FlowLayoutPanel? fromPanel = draggedPlayer.Parent as FlowLayoutPanel;
+            FlowLayoutPanel? toPanel = sender as FlowLayoutPanel;
 
             if (fromPanel == null || toPanel == null || fromPanel == toPanel)
                 return;

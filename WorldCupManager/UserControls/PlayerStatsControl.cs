@@ -22,8 +22,10 @@ namespace WorldCupManager
 
             try
             {
-                if (!string.IsNullOrEmpty(_playerStats.ImagePath) && File.Exists(_playerStats.ImagePath))
-                    pbPlayerImg.Image = Image.FromFile(_playerStats.ImagePath);
+                string imagePath = Utility.GetPlayerImagePath(_playerStats.Player.Name);
+
+                if (File.Exists(imagePath))
+                    pbPlayerImg.Image = Image.FromFile(imagePath);
                 else
                     pbPlayerImg.Image = defaultImg;
             }
